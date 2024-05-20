@@ -1,7 +1,7 @@
 {
   "string": [
     {
-      "name": "module_desc",
+      "name": "ModuleEntry_Desc",
       "value": "main module"
     },
     {
@@ -10,11 +10,19 @@
     },
     {
       "name": "EntryAbility_label",
-      "value": "NaoNao"
+      "value": "naonao"
     },
     {
       "name": "days",
       "value": "days"
+    },
+    {
+      "name": "search",
+      "value": "Search"
+    },
+    {
+      "name": "type_in_search_or_url",
+      "value": "Type in searching content or URL"
     },
     {
       "name": "Bar_main",
@@ -31,6 +39,14 @@
     {
       "name": "BirthdayCountdownPanel_NextInfoTitle",
       "value": "Next Birthday"
+    },
+    {
+      "name": "DaysLeft",
+      "value": "days left"
+    },
+    {
+      "name": "DaysPassed",
+      "value": "days passed"
     }
   ]
 }

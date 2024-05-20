@@ -1,5 +1,6 @@
 import hilog from '@ohos.hilog';
 import { describe, beforeAll, beforeEach, afterEach, afterAll, it, expect } from '@ohos/hypium'
+import { formatDateTime } from '../../../main/ets/pages/cards/model/Countdown';
 
 export default function abilityTest() {
   describe('ActsAbilityTest', function () {
@@ -30,6 +31,10 @@ export default function abilityTest() {
       // Defines a variety of assertion methods, which are used to declare expected boolean conditions.
       expect(a).assertContain(b)
       expect(a).assertEqual(a)
+    })
+    it('formatDateTime', 0, () => {
+      let format = formatDateTime(new Date())
+      hilog.info(0, 'Test', 'now date format: %s', format)
     })
   })
 }

@@ -1,12 +1,12 @@
 {
   "string": [
     {
-      "name": "module_desc",
+      "name": "ModuleEntry_Desc",
       "value": "主模块"
     },
     {
       "name": "EntryAbility_desc",
-      "value": "description"
+      "value": "工具应用，仅限个人使用"
     },
     {
       "name": "EntryAbility_label",
@@ -15,6 +15,14 @@
     {
       "name": "days",
       "value": "天"
+    },
+    {
+      "name": "search",
+      "value": "搜索"
+    },
+    {
+      "name": "type_in_search_or_url",
+      "value": "输入搜索内容或地址"
     },
     {
       "name": "Bar_main",
@@ -31,6 +39,14 @@
     {
       "name": "BirthdayCountdownPanel_NextInfoTitle",
       "value": "下一个生日"
+    },
+    {
+      "name": "DaysLeft",
+      "value": "天剩余"
+    },
+    {
+      "name": "DaysPassed",
+      "value": "天了"
     }
   ]
 }

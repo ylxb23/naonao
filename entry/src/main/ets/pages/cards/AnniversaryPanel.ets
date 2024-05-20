@@ -1,22 +1,27 @@
-import { DateItem, formatDate, lastDaysOfDate } from './model/Countdown'
+import { DateItem, daysPassedOfDate, formatDate } from './model/Countdown'
 
 @Preview({
   title: "CountdownPanel"
 })
+
 @Component
-export struct CountdownPanel {
+export struct AnniversaryPanel {
   displayWith = 150
   displayHeight = 150
-  info: DateItem = { id: 1, title: '距离过年', date: new Date('2025-01-01') }
+  info1: DateItem = { id: 1, title: '已经入职', date: new Date('2023-04-24') }
+  info2: DateItem = { id: 2, title: '墨墨出生', date: new Date('2023-08-02') }
+  info3: DateItem = { id: 3, title: '结婚已经', date: new Date('2022-03-03') }
 
   build() {
     Flex({ justifyContent: FlexAlign.SpaceAround, wrap: FlexWrap.Wrap, alignContent: FlexAlign.SpaceEvenly }) {
-      this.Countdown(this.info)
+      this.Anniversary(this.info1)
+      this.Anniversary(this.info2)
+      this.Anniversary(this.info3)
     }.width('100%').height('100%')
   }
 
   @Builder
-  Countdown(info: DateItem) {
+  Anniversary(info: DateItem) {
     Column() {
       Text(info.title)
         .width('100%')
@@ -27,9 +32,9 @@ export struct CountdownPanel {
         .fontColor(Color.White)
         .fontWeight(FontWeight.Bold)
       Row() {
-        Text(lastDaysOfDate(info.date) + ' ').textAlign(TextAlign.Center)
+        Text(daysPassedOfDate(info.date) + ' ').textAlign(TextAlign.Center)
           .fontSize(45).fontColor(Color.White).fontWeight(FontWeight.Bolder)
-        Text($r('app.string.DaysLeft')).textAlign(TextAlign.Center)
+        Text($r('app.string.DaysPassed')).textAlign(TextAlign.Center)
           .fontSize(10).fontColor(Color.White).fontWeight(FontWeight.Bold)
       }.width('100%').height(80).align(Alignment.Bottom).justifyContent(FlexAlign.Center)
 

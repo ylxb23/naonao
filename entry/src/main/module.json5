@@ -2,10 +2,13 @@
   "module": {
     "name": "entry",
     "type": "entry",
-    "description": "$string:module_desc",
+    "description": "$string:ModuleEntry_Desc",
     "mainElement": "EntryAbility",
     "deviceTypes": [
-      "phone"
+      "phone",
+      "tablet",
+      "default",
+      "tv"
     ],
     "deliveryWithInstall": true,
     "installationFree": false,
