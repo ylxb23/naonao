@@ -1,0 +1,41 @@
+{
+  "app": {
+    "signingConfigs": [
+      {
+        "name": "default",
+        "type": "HarmonyOS",
+        "material": {
+          "certpath": "C:\\Users\\ylxb2\\.ohos\\config\\auto_debug_NaoNao_com.zero.hm.naonao_80086000306026853.cer",
+          "storePassword": "0000001BC20F46789246AEEE5A06B7813622638041B0AC808147006B8A5CDBBED820180EBA4C5B3782F768",
+          "keyAlias": "debugKey",
+          "keyPassword": "0000001B5BE421FD9667B6E38AC2DB0229955228C227E4704CFE7AD973E2179DBB23C6C97F0EB26E13C1D2",
+          "profile": "C:\\Users\\ylxb2\\.ohos\\config\\auto_debug_NaoNao_com.zero.hm.naonao_80086000306026853.p7b",
+          "signAlg": "SHA256withECDSA",
+          "storeFile": "C:\\Users\\ylxb2\\.ohos\\config\\auto_debug_NaoNao_com.zero.hm.naonao_80086000306026853.p12"
+        }
+      }
+    ],
+    "compileSdkVersion": 9,
+    "compatibleSdkVersion": 9,
+    "products": [
+      {
+        "name": "default",
+        "signingConfig": "default",
+      }
+    ]
+  },
+  "modules": [
+    {
+      "name": "entry",
+      "srcPath": "./entry",
+      "targets": [
+        {
+          "name": "default",
+          "applyToProducts": [
+            "default"
+          ]
+        }
+      ]
+    }
+  ]
+}

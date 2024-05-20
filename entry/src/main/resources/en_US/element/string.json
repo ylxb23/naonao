@@ -1,0 +1,36 @@
+{
+  "string": [
+    {
+      "name": "module_desc",
+      "value": "main module"
+    },
+    {
+      "name": "EntryAbility_desc",
+      "value": "description"
+    },
+    {
+      "name": "EntryAbility_label",
+      "value": "NaoNao"
+    },
+    {
+      "name": "days",
+      "value": "days"
+    },
+    {
+      "name": "Bar_main",
+      "value": "Home"
+    },
+    {
+      "name": "Bar_browser",
+      "value": "Browser"
+    },
+    {
+      "name": "Bar_mine",
+      "value": "Mine"
+    },
+    {
+      "name": "BirthdayCountdownPanel_NextInfoTitle",
+      "value": "Next Birthday"
+    }
+  ]
+}
