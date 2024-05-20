@@ -11,20 +11,16 @@ import BirthdayListDataSource, { birthdayCountdownItemList, BirthdayCountdownIte
  */
 @Component
 export struct BirthdayCountdownPanel {
-  // 宽度
-  displayWidth = 120
-  // 长度
-  displayHeight= 50
   // 左边正方形尺寸
-  leftInfoWidth = 42
-  leftInfoHeight= 42
+  leftInfoWidth = 126
+  leftInfoHeight= this.leftInfoWidth
   // 右边长方形尺寸
-  rightListWidth  = 66
-  rightListHeight = 42
+  rightListWidth  = 198
+  rightListHeight = this.leftInfoHeight
   // 留白部分尺寸
-  marginLength = 4
+  marginLength = 12
 
-  @StorageProp('fontSize') fontSize: number = 0
+  @StorageProp('fontSize') fontSize: number = 10
 
 
 
@@ -39,7 +35,7 @@ export struct BirthdayCountdownPanel {
         .align(Alignment.TopStart)
         .alignItems(HorizontalAlign.Start)
         .backgroundColor('#555')
-        .borderRadius(2)
+        .borderRadius(6)
         .opacity(0.7)
 
         // 右边展示所有生日倒计时列表
@@ -53,54 +49,53 @@ export struct BirthdayCountdownPanel {
                   }
                 }
               }, (item: BirthdayCountdownItem) => item.id.toString())
-
-            }
-          }.height(this.rightListHeight)
+            }.width('100%').height('100%')
+          }
         }.width(this.rightListWidth).height(this.rightListHeight)
         .margin({left: this.marginLength, top: this.marginLength, bottom: this.marginLength})
-        .borderRadius(2)
+        .borderRadius(6)
         .backgroundColor('#333')
         .opacity(0.5)
 
-      }.width('100%')
-      .borderRadius(3)
+      }.width('100%').height(150)
+      .borderRadius(10)
       .backgroundColor('#ccc')
       .opacity(0.7)
     }
   }
 
 
+  lineMarginLength: number = 10
+  textPaddingLength: number = this.lineMarginLength
   @Builder
   TopBirthdayItem(username: string, lastDays: number, birthday: string) {
     Row() {
       Column() {
         Text($r('app.string.BirthdayCountdownPanel_NextInfoTitle'))
           .fontSize(this.fontSize + 5).fontColor(Color.White).fontWeight(FontWeight.Bold)
-          .margin({top: 3})
+          .margin({top: this.lineMarginLength})
           .width('100%')
         Text(username)
           .fontSize(this.fontSize + 4).fontColor(Color.White).fontWeight(FontWeight.Bold)
-          .margin({top: 3})
+          .margin({top: this.lineMarginLength})
           .width('100%')
         Row() {
-          Text(`${lastDays}`+" ")
+          Text(`${lastDays}`+' ')
             .fontSize(this.fontSize + 10).fontColor(Color.White).fontWeight(FontWeight.Bold)
-            .margin({top: 3})
-            .width('30%')
+            .margin({top: this.lineMarginLength})
           Text($r('app.string.days'))
             .fontSize(this.fontSize + 3).fontColor(Color.White).fontWeight(FontWeight.Bold)
-            .width('70%')
-        }.width('100%')
+        }.width('100%').alignItems(VerticalAlign.Bottom)
         Text(birthday)
           .fontSize(this.fontSize + 3).fontColor(Color.White).fontWeight(FontWeight.Bold)
-          .margin({top: 3})
+          .margin({top: this.lineMarginLength})
           .width('100%')
-      }.alignItems(HorizontalAlign.Start).padding({left: 2})
+      }.alignItems(HorizontalAlign.Start).padding({left: this.textPaddingLength})
     }.height('100%').width('100%')
   }
 
   @Builder
-  BirthdayItemList(id: number, username: string, lastDays: number, birthday: string) {
+  BirthdayItemList(_id: number, username: string, lastDays: number, birthday: string) {
     Row() {
       Column() {
         Text(username)
@@ -108,8 +103,9 @@ export struct BirthdayCountdownPanel {
           .textAlign(TextAlign.Start)
         Text(birthday)
           .fontSize(this.fontSize + 3).fontColor(Color.White).fontWeight(FontWeight.Bold)
-          .textAlign(TextAlign.Start).margin({top: 1})
-      }.width('40%').alignItems(HorizontalAlign.Start).padding({left: 3})
+          .textAlign(TextAlign.Start).margin({top: this.lineMarginLength / 2})
+      }.width('60%').alignItems(HorizontalAlign.Start).align(Alignment.BottomStart)
+      .padding({left: this.textPaddingLength})
       Column() {
         Row() {
           Text(lastDays + '')
@@ -117,9 +113,9 @@ export struct BirthdayCountdownPanel {
             .fontSize(this.fontSize + 5).fontColor(Color.White).fontWeight(FontWeight.Bold)
           Text($r('app.string.days'))
             .width('20%')
-            .fontSize(this.fontSize + 3).fontColor(Color.White).fontWeight(FontWeight.Lighter)
+            .fontSize(this.fontSize + 2).fontColor(Color.White).fontWeight(FontWeight.Normal)
         }.width('100%').alignItems(VerticalAlign.Bottom)
-      }.width('60%')
-    }.margin({top: 3})
+      }.width('40%').align(Alignment.BottomEnd)
+    }.margin({top: this.lineMarginLength})
   }
 }
