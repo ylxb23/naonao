@@ -19,7 +19,7 @@ struct Index {
         .margin({ top: 6 })
         .fontSize(this.currTabIdx === targetIndex ? 16 : 14)
         .fontColor(this.currTabIdx === targetIndex ? '#1296DB' : '#6B6B6B')
-        .fontWeight(FontWeight.Bold)
+        .fontWeight(FontWeight.Normal)
     }
     .width('100%').height('100%')
     .justifyContent(FlexAlign.Center)

@@ -1,6 +1,6 @@
 import hilog from '@ohos.hilog';
 import { describe, beforeAll, beforeEach, afterEach, afterAll, it, expect } from '@ohos/hypium'
-import { formatDateTime } from '../../../main/ets/pages/cards/model/Countdown';
+import { formatDateTime } from '../../../main/ets/viewmodel/card/Countdown';
 
 export default function abilityTest() {
   describe('ActsAbilityTest', function () {
