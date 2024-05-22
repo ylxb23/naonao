@@ -5,13 +5,26 @@
         "name": "default",
         "type": "HarmonyOS",
         "material": {
-          "certpath": "C:\\Users\\ylxb2\\.ohos\\config\\auto_debug_NaoNao_com.zero.hm.naonao_80086000306026853.cer",
-          "storePassword": "0000001BC20F46789246AEEE5A06B7813622638041B0AC808147006B8A5CDBBED820180EBA4C5B3782F768",
+          "certpath": "C:\\Users\\zero\\.ohos\\config\\auto_debug_naonao_com.zero.hm.naonao_80086000306026853.cer",
+          "storePassword": "0000001BF8B998FB90A7F1419BF849EFB298965E2060D192C02C2A510AB016D7D5EC213337405E55333B9D",
           "keyAlias": "debugKey",
-          "keyPassword": "0000001B5BE421FD9667B6E38AC2DB0229955228C227E4704CFE7AD973E2179DBB23C6C97F0EB26E13C1D2",
-          "profile": "C:\\Users\\ylxb2\\.ohos\\config\\auto_debug_NaoNao_com.zero.hm.naonao_80086000306026853.p7b",
+          "keyPassword": "0000001B5B99EB19E54EB422526518D9409772B4D02F535A56F03B19E99917CD34FA138B9E7F58A64743D7",
+          "profile": "C:\\Users\\zero\\.ohos\\config\\auto_debug_naonao_com.zero.hm.naonao_80086000306026853.p7b",
           "signAlg": "SHA256withECDSA",
-          "storeFile": "C:\\Users\\ylxb2\\.ohos\\config\\auto_debug_NaoNao_com.zero.hm.naonao_80086000306026853.p12"
+          "storeFile": "C:\\Users\\zero\\.ohos\\config\\auto_debug_naonao_com.zero.hm.naonao_80086000306026853.p12"
+        }
+      },
+      {
+        "name": "realmeta30pro",
+        "type": "HarmonyOS",
+        "material": {
+          "storePassword": "0000001BF86BE9FC0F3CCE2DE004D63B9AC5B4CAA4DF5F4A00BD3735633E204CAD506FDB90B61C8DC6FC69",
+          "certpath": "D:/data/hm/keys/auto_debug_80086000306026853.cer",
+          "keyAlias": "naonao",
+          "keyPassword": "0000001B8955A0153A9393B3DAE5C46D4CB31E7962E57AA1ABED494B36D41BAB3DE51F9B800C8134AA10AC",
+          "profile": "D:/data/hm/keys/naonaoDebug.p7b",
+          "signAlg": "SHA256withECDSA",
+          "storeFile": "D:/data/hm/keys/naonao.p12"
         }
       }
     ],

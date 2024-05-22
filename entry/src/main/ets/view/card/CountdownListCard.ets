@@ -1,13 +1,23 @@
-import BirthdayCountdownDataSource, {
+import { formatDate } from '../../common/DateUtil';
+import {
   BirthdayCountdownItem,
   sortBirthdayCountdownList,
   transferBirthdayItemList,
-  birthdayList
-,
+  birthdayList,
 } from '../../viewmodel/card/BirthdayCountdown'
+import {
+  CountdownListCardItem,
+  DISPLAY_BIG_HEIGHT,
+  DISPLAY_BIG_LEFT_INFO_HEIGHT,
+  DISPLAY_BIG_LEFT_INFO_WIDTH,
+  DISPLAY_BIG_RIGHT_LIST_HEIGHT,
+  DISPLAY_BIG_RIGHT_LIST_WIDTH,
+  DISPLAY_BIG_WIDTH,
+  NamedDateItem
+} from '../../viewmodel/card/Card'
 
 @Preview({
-  title: "BirthdayCountdownPanel"
+  title: "BirthdayCountdown"
 })
 
   /**
@@ -16,17 +26,9 @@ import BirthdayCountdownDataSource, {
    */
 @Component
 export struct CountdownListCard {
-  displayWidth = 360
-  displayHeight = 150
-  // 左边正方形尺寸
-  leftInfoWidth = 126
-  leftInfoHeight = this.leftInfoWidth
-  // 右边长方形尺寸
-  rightListWidth = 198
-  rightListHeight = this.leftInfoHeight
-  // 留白部分尺寸
-  marginLength = 12
-  @StorageProp('fontSize') fontSize: number = 10
+  private info: CountdownListCardItem
+  @StorageProp('fontSize') fontSize: number = 10;
+
   topBirthdayCountdownItem: BirthdayCountdownItem = sortBirthdayCountdownList(transferBirthdayItemList(birthdayList))[0]
 
   build() {
@@ -34,11 +36,11 @@ export struct CountdownListCard {
       Row() {
         // 左边展示最近一个生日倒计时内容
         Column() {
-          this.TopBirthdayItem(this.topBirthdayCountdownItem.username, this.topBirthdayCountdownItem.lastDays, this.topBirthdayCountdownItem.birthday)
+          this.TopBirthdayItem(this.info.getNextAnniversaryDayCountdownItem())
         }
-        .width(this.leftInfoWidth)
-        .height(this.leftInfoHeight)
-        .margin({ left: this.marginLength, top: this.marginLength, bottom: this.marginLength })
+        .width(DISPLAY_BIG_LEFT_INFO_WIDTH)
+        .height(DISPLAY_BIG_LEFT_INFO_HEIGHT)
+        .margin(10)
         .align(Alignment.TopStart)
         .alignItems(HorizontalAlign.Start)
         .borderRadius(6)
@@ -49,84 +51,88 @@ export struct CountdownListCard {
         Column() {
           Scroll() {
             List() {
-              LazyForEach(new BirthdayCountdownDataSource(birthdayList), (item: BirthdayCountdownItem) => {
+              ForEach(this.info.getSortedAnniversaryDayCountdownList(), (item, _idx) => {
                 ListItem() {
                   Column() {
-                    this.BirthdayItemList(item.id, item.username, item.lastDays, item.birthday)
+                    this.BirthdayItemList(item)
                   }
                 }
-              }, (item: BirthdayCountdownItem) => item.id.toString())
+              })
+              // LazyForEach(new BirthdayCountdownDataSource(birthdayList), (item: BirthdayCountdownItem) => {
+              //   ListItem() {
+              //     Column() {
+              //       this.BirthdayItemList(item.id, item.username, item.lastDays, item.birthday)
+              //     }
+              //   }
+              // }, (item: BirthdayCountdownItem) => item.id.toString())
             }.width('100%').height('100%')
           }
         }
-        .width(this.rightListWidth)
-        .height(this.rightListHeight)
-        .margin({ left: this.marginLength, top: this.marginLength, bottom: this.marginLength })
+        .width(DISPLAY_BIG_RIGHT_LIST_WIDTH)
+        .height(DISPLAY_BIG_RIGHT_LIST_HEIGHT)
+        .margin({ top: 10, bottom: 10 })
         .borderRadius(6)
         .backgroundColor('#777')
         .opacity(0.5)
 
-      }.width(this.displayWidth).height(this.displayHeight)
+      }.width(DISPLAY_BIG_WIDTH).height(DISPLAY_BIG_HEIGHT)
       .borderRadius(10)
       .backgroundColor('#ccc')
     }
   }
 
-  lineMarginLength: number = 10
-  textPaddingLength: number = this.lineMarginLength
-
   @Builder
-  TopBirthdayItem(username: string, lastDays: number, birthday: string) {
+  TopBirthdayItem(item: NamedDateItem) {
     Row() {
       Column() {
         Text($r('app.string.BirthdayCountdownPanel_NextInfoTitle'))
           .fontSize(this.fontSize + 4).fontColor(Color.White).fontWeight(FontWeight.Bold)
           .width('100%')
-        Text(username)
+        Text(item.name)
           .fontSize(this.fontSize + 3)
           .fontColor(Color.White)
           .fontWeight(FontWeight.Bold)
-          .margin({ top: this.lineMarginLength })
+          .margin({ top: 10 })
           .width('100%')
         Row() {
-          Text(lastDays + '')
+          Text(item.nextAnniversaryCountdownDays() + '')
             .fontSize(this.fontSize + 12).fontColor(Color.White).fontWeight(FontWeight.Bold)
-            .margin({ top: this.lineMarginLength })
+            .margin({ top: 10 })
           Text($r('app.string.days'))
             .fontSize(this.fontSize + 1).fontColor(Color.White).fontWeight(FontWeight.Bold)
         }.width('100%').alignItems(VerticalAlign.Bottom)
 
-        Text(birthday)
+        Text(formatDate(item.date))
           .fontSize(this.fontSize + 2)
           .fontColor(Color.White)
           .fontWeight(FontWeight.Bold)
-          .margin({ top: this.lineMarginLength })
+          .margin({ top: 10 })
           .width('100%')
-      }.alignItems(HorizontalAlign.Start).padding({ left: this.textPaddingLength })
+      }.alignItems(HorizontalAlign.Start).padding({ left: 10 })
     }.height('100%').width('100%')
   }
 
   @Builder
-  BirthdayItemList(_id: number, username: string, lastDays: number, birthday: string) {
+  BirthdayItemList(item: NamedDateItem) {
     Row() {
       Column() {
-        Text(username)
+        Text(item.name)
           .fontSize(this.fontSize + 4).fontColor(Color.White).fontWeight(FontWeight.Bold)
           .textAlign(TextAlign.Start)
-        Text(birthday)
+        Text(formatDate(item.date))
           .fontSize(this.fontSize + 3)
           .fontColor(Color.White)
           .fontWeight(FontWeight.Bold)
           .textAlign(TextAlign.Start)
-          .margin({ top: this.lineMarginLength / 2 })
+          .margin({ top: 10 / 2 })
       }.width('60%').alignItems(HorizontalAlign.Start).align(Alignment.BottomStart)
-      .padding({ left: this.textPaddingLength })
+      .padding({ left: 10 })
 
       Column() {
         Row() {
           Blank()
 
-          Text(lastDays + '')
+          Text(item.nextAnniversaryCountdownDays() + '')
             .textAlign(TextAlign.End)
             .fontSize(this.fontSize + 8)
             .fontColor(Color.White)
@@ -134,10 +140,10 @@ export struct CountdownListCard {
 
           Text($r('app.string.days'))
             .fontSize(this.fontSize + 2).fontColor(Color.White).fontWeight(FontWeight.Bold)
-        }.width('100%').margin({ right: this.lineMarginLength }).alignItems(VerticalAlign.Bottom)
+        }.width('100%').margin({ right: 10 }).alignItems(VerticalAlign.Bottom)
 
       }.width('40%').alignItems(HorizontalAlign.End).align(Alignment.Bottom)
-    }.margin({ top: this.lineMarginLength })
+    }.margin({ top: 10 })
     .borderWidth({ bottom: 1 })
     .borderStyle({ bottom: BorderStyle.Dashed }).borderColor(Color.White)
   }

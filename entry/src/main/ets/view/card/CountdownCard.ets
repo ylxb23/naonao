@@ -1,22 +1,22 @@
-import { DateItem, formatDate, lastDaysOfDate } from '../../viewmodel/card/Countdown'
+import { CountdownCardItem, DISPLAY_MIDDLE_HEIGHT, DISPLAY_MIDDLE_WIDTH } from '../../viewmodel/card/Card'
+import { formatDate, lastDaysOfDate } from '../../viewmodel/card/Countdown'
 
 @Preview({
   title: "Countdown"
 })
+
 @Component
 export struct CountdownCard {
-  displayWith = 150
-  displayHeight = 150
-  info: DateItem = { id: 1, title: '距离过年', date: new Date('2025-01-01') }
+  private info: CountdownCardItem
 
   build() {
     Flex({ justifyContent: FlexAlign.SpaceAround, wrap: FlexWrap.Wrap, alignContent: FlexAlign.SpaceEvenly }) {
       this.Countdown(this.info)
-    }.width('100%').height('100%')
+    }
   }
 
   @Builder
-  Countdown(info: DateItem) {
+  Countdown(info: CountdownCardItem) {
     Column() {
       Text(info.title)
         .width('100%')
@@ -42,8 +42,8 @@ export struct CountdownCard {
         .fontColor(Color.White)
         .fontWeight(FontWeight.Bold)
     }
-    .width(this.displayWith)
-    .height(this.displayHeight)
+    .width(DISPLAY_MIDDLE_WIDTH)
+    .height(DISPLAY_MIDDLE_HEIGHT)
     .alignItems(HorizontalAlign.Center)
     .borderRadius(10)
     .backgroundColor('#ccc')

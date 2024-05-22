@@ -1,7 +1,6 @@
 import router from '@ohos.router'
 import hilog from '@ohos.hilog';
 
-@Entry
 @Component
 struct Esplanade {
   @State message: number = (router.getParams() as Record<string, number>)["message"];
