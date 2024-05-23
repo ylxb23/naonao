@@ -24,7 +24,7 @@ export const DISPLAY_SMALL_HEIGHT = DISPLAY_SMALL_WIDTH / 3
 /**
  * 所有卡片共有的属性
  */
-abstract class AbsCard {
+export abstract class AbsCard {
   public readonly type?: CardTypeEnum
   public size?: SizeEnum
 

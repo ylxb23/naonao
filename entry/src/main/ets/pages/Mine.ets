@@ -3,7 +3,7 @@
 })
 @Component
 export struct Mine {
-  tabIdx: number
+  tabIdx: number = 0
 
   build() {
     Stack({ alignContent: Alignment.Top }) {
