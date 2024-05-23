@@ -4,7 +4,6 @@ import { daysPassedOfDate, formatDate } from '../../viewmodel/card/Countdown'
 @Preview({
   title: "Anniversary"
 })
-
 @Component
 export struct AnniversaryCard {
   private info: AnniversaryCardItem
@@ -19,6 +18,7 @@ export struct AnniversaryCard {
   Anniversary(info: AnniversaryCardItem) {
     Column() {
       Text(info.title)
+        .textOverflow({ overflow: TextOverflow.Ellipsis })
         .width('100%')
         .height(30)
         .margin({ top: 5 })

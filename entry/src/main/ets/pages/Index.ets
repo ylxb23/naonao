@@ -1,17 +1,24 @@
 import { Browser } from './Browser';
 import { Home } from './Home';
+import { Mine } from './Mine';
 
-
+@Preview({
+  title: "Index",
+  deviceType: "phone",
+  width: 1176,
+  height: 2400,
+  colorMode: 'light', //显示的亮/暗模式，取值为light或dark
+  dpi: 480, //预览设备的屏幕DPI值
+  locale: 'zh_CN', //预览设备的语言，如zh_CN、en_US等
+})
 @Entry
 @Component
 struct Index {
   @State currTabIdx: number = 0;
-  currTabImg: string | Resource;
-
 
   @Builder TabBuilder(title: string | Resource, targetIndex: number, imgPath: Resource, onImgPath: Resource) {
     Column() {
-      Image(this.currTabIdx === targetIndex ? onImgPath: imgPath)
+      Image(this.currTabIdx === targetIndex ? onImgPath : imgPath)
         .fillColor(this.currTabIdx === targetIndex ? '#1296DB' : '#6B6B6B')
         .size({ width: this.currTabIdx === targetIndex ? 24 : 22,
           height: this.currTabIdx === targetIndex ? 24 : 22 })
@@ -20,6 +27,7 @@ struct Index {
         .fontSize(this.currTabIdx === targetIndex ? 16 : 14)
         .fontColor(this.currTabIdx === targetIndex ? '#1296DB' : '#6B6B6B')
         .fontWeight(FontWeight.Normal)
+        .textOverflow({ overflow: TextOverflow.Ellipsis })
     }
     .width('100%').height('100%')
     .justifyContent(FlexAlign.Center)
@@ -39,7 +47,7 @@ struct Index {
           }.tabBar(this.TabBuilder($r('app.string.Bar_browser'), 1, $r('app.media.article'), $r('app.media.article2')))
 
           TabContent() {
-            Text(this.currTabIdx + '').fontColor(Color.Red).fontSize(50)
+            Mine({tabIdx: this.currTabIdx})
           }.tabBar(this.TabBuilder($r('app.string.Bar_mine'), 2, $r('app.media.user'), $r('app.media.user2')))
         }
         .barPosition(BarPosition.End)

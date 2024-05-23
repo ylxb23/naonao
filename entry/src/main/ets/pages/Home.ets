@@ -21,13 +21,13 @@ export struct Home {
   yearEndCountdown: CountdownCardItem = { title: '距离过年', date: new Date('2025-01-01') }
   marryDate: AnniversaryCardItem = { title: '结婚已经', date: new Date('2022-03-03') }
   birthDate: AnniversaryCardItem = { title: '墨墨出生', date: new Date('2023-08-02') }
-  workInDate: AnniversaryCardItem = { title: '已经入职', date: new Date('2023-04-28') }
+  workInDate: AnniversaryCardItem = { title: '已经入职', date: new Date('2023-04-24') }
 
   build() {
     Scroll() {
       Flex({ justifyContent: FlexAlign.SpaceBetween, wrap: FlexWrap.Wrap, alignContent: FlexAlign.SpaceEvenly }) {
-        CountdownListCard({ info: this.birthdayList }).width('100%').height(150)
-          .margin({ top: 10, bottom: 10 })
+        CountdownListCard({ info: this.birthdayList }).width(360).height(150)
+          .margin(10)
 
         CountdownCard({ info: this.yearEndCountdown }).width(150).height(150)
           .margin(10)

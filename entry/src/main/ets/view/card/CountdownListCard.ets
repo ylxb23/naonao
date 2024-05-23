@@ -1,10 +1,4 @@
-import { formatDate } from '../../common/DateUtil';
-import {
-  BirthdayCountdownItem,
-  sortBirthdayCountdownList,
-  transferBirthdayItemList,
-  birthdayList,
-} from '../../viewmodel/card/BirthdayCountdown'
+import { formatDate, nextAnniversaryDays } from '../../common/DateUtil';
 import {
   CountdownListCardItem,
   DISPLAY_BIG_HEIGHT,
@@ -13,6 +7,8 @@ import {
   DISPLAY_BIG_RIGHT_LIST_HEIGHT,
   DISPLAY_BIG_RIGHT_LIST_WIDTH,
   DISPLAY_BIG_WIDTH,
+  getNextAnniversaryDayCountdownItem,
+  getSortedAnniversaryDayCountdownList,
   NamedDateItem
 } from '../../viewmodel/card/Card'
 
@@ -26,76 +22,71 @@ import {
    */
 @Component
 export struct CountdownListCard {
-  private info: CountdownListCardItem
+  info: CountdownListCardItem
   @StorageProp('fontSize') fontSize: number = 10;
 
-  topBirthdayCountdownItem: BirthdayCountdownItem = sortBirthdayCountdownList(transferBirthdayItemList(birthdayList))[0]
+  constructor(item: CountdownListCardItem) {
+    super()
+    this.info = item
+  }
 
   build() {
     Row() {
-      Row() {
-        // 左边展示最近一个生日倒计时内容
-        Column() {
-          this.TopBirthdayItem(this.info.getNextAnniversaryDayCountdownItem())
-        }
-        .width(DISPLAY_BIG_LEFT_INFO_WIDTH)
-        .height(DISPLAY_BIG_LEFT_INFO_HEIGHT)
-        .margin(10)
-        .align(Alignment.TopStart)
-        .alignItems(HorizontalAlign.Start)
-        .borderRadius(6)
-        .backgroundColor('#555')
-        .opacity(0.5)
+      // 左边展示最近一个倒计时内容，和标题
+      Column() {
+        this.TopItemDetail(this.info.title, getNextAnniversaryDayCountdownItem(this.info))
+      }
+      .width(DISPLAY_BIG_LEFT_INFO_WIDTH)
+      .height(DISPLAY_BIG_LEFT_INFO_HEIGHT)
+      .margin(10)
+      .align(Alignment.TopStart)
+      .alignItems(HorizontalAlign.Start)
+      .borderRadius(6)
+      .backgroundColor('#555')
+      .opacity(0.5)
 
-        // 右边展示所有生日倒计时列表
-        Column() {
-          Scroll() {
-            List() {
-              ForEach(this.info.getSortedAnniversaryDayCountdownList(), (item, _idx) => {
-                ListItem() {
-                  Column() {
-                    this.BirthdayItemList(item)
-                  }
+      // 右边展示所有倒计时列表
+      Column() {
+        Scroll() {
+          List() {
+            ForEach(getSortedAnniversaryDayCountdownList(this.info), (item, _idx) => {
+              ListItem() {
+                Column() {
+                  this.ItemListSummary(item)
                 }
-              })
-              // LazyForEach(new BirthdayCountdownDataSource(birthdayList), (item: BirthdayCountdownItem) => {
-              //   ListItem() {
-              //     Column() {
-              //       this.BirthdayItemList(item.id, item.username, item.lastDays, item.birthday)
-              //     }
-              //   }
-              // }, (item: BirthdayCountdownItem) => item.id.toString())
-            }.width('100%').height('100%')
-          }
+              }
+            })
+          }.width('100%').height('100%')
         }
-        .width(DISPLAY_BIG_RIGHT_LIST_WIDTH)
-        .height(DISPLAY_BIG_RIGHT_LIST_HEIGHT)
-        .margin({ top: 10, bottom: 10 })
-        .borderRadius(6)
-        .backgroundColor('#777')
-        .opacity(0.5)
+      }
+      .width(DISPLAY_BIG_RIGHT_LIST_WIDTH)
+      .height(DISPLAY_BIG_RIGHT_LIST_HEIGHT)
+      .margin({ top: 10, bottom: 10 })
+      .borderRadius(6)
+      .backgroundColor('#777')
+      .opacity(0.5)
 
-      }.width(DISPLAY_BIG_WIDTH).height(DISPLAY_BIG_HEIGHT)
-      .borderRadius(10)
-      .backgroundColor('#ccc')
-    }
+    }.width(DISPLAY_BIG_WIDTH).height(DISPLAY_BIG_HEIGHT)
+    .borderRadius(10)
+    .backgroundColor('#ccc')
   }
 
   @Builder
-  TopBirthdayItem(item: NamedDateItem) {
+  TopItemDetail(title: string, item: NamedDateItem) {
     Row() {
       Column() {
-        Text($r('app.string.BirthdayCountdownPanel_NextInfoTitle'))
+        Text(title)
           .fontSize(this.fontSize + 4).fontColor(Color.White).fontWeight(FontWeight.Bold)
           .width('100%')
         Text(item.name)
+          .textOverflow({ overflow: TextOverflow.Ellipsis })
           .fontSize(this.fontSize + 3)
           .fontColor(Color.White)
           .fontWeight(FontWeight.Bold)
           .margin({ top: 10 })
           .width('100%')
         Row() {
-          Text(item.nextAnniversaryCountdownDays() + '')
+          Text(nextAnniversaryDays(item.date) + '')
             .fontSize(this.fontSize + 12).fontColor(Color.White).fontWeight(FontWeight.Bold)
             .margin({ top: 10 })
           Text($r('app.string.days'))
@@ -113,11 +104,14 @@ export struct CountdownListCard {
   }
 
   @Builder
-  BirthdayItemList(item: NamedDateItem) {
+  ItemListSummary(item: NamedDateItem) {
     Row() {
       Column() {
         Text(item.name)
-          .fontSize(this.fontSize + 4).fontColor(Color.White).fontWeight(FontWeight.Bold)
+          .textOverflow({ overflow: TextOverflow.Ellipsis })
+          .fontSize(this.fontSize + 4)
+          .fontColor(Color.White)
+          .fontWeight(FontWeight.Bold)
           .textAlign(TextAlign.Start)
         Text(formatDate(item.date))
           .fontSize(this.fontSize + 3)
@@ -132,7 +126,7 @@ export struct CountdownListCard {
         Row() {
           Blank()
 
-          Text(item.nextAnniversaryCountdownDays() + '')
+          Text(nextAnniversaryDays(item.date) + '')
             .textAlign(TextAlign.End)
             .fontSize(this.fontSize + 8)
             .fontColor(Color.White)
@@ -143,8 +137,10 @@ export struct CountdownListCard {
         }.width('100%').margin({ right: 10 }).alignItems(VerticalAlign.Bottom)
 
       }.width('40%').alignItems(HorizontalAlign.End).align(Alignment.Bottom)
-    }.margin({ top: 10 })
+    }
+    .margin({ top: 10 })
     .borderWidth({ bottom: 1 })
-    .borderStyle({ bottom: BorderStyle.Dashed }).borderColor(Color.White)
+    .borderStyle({ bottom: BorderStyle.Dashed })
+    .borderColor(Color.White)
   }
 }

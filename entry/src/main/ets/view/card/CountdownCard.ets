@@ -4,7 +4,6 @@ import { formatDate, lastDaysOfDate } from '../../viewmodel/card/Countdown'
 @Preview({
   title: "Countdown"
 })
-
 @Component
 export struct CountdownCard {
   private info: CountdownCardItem
@@ -19,6 +18,7 @@ export struct CountdownCard {
   Countdown(info: CountdownCardItem) {
     Column() {
       Text(info.title)
+        .textOverflow({ overflow: TextOverflow.Ellipsis })
         .width('100%')
         .height(30)
         .margin({ top: 5 })
