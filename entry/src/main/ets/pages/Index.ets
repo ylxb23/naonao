@@ -47,7 +47,7 @@ struct Index {
           }.tabBar(this.TabBuilder($r('app.string.Bar_browser'), 1, $r('app.media.article'), $r('app.media.article2')))
 
           TabContent() {
-            Mine({tabIdx: this.currTabIdx})
+            Mine({tabIdx: 2})
           }.tabBar(this.TabBuilder($r('app.string.Bar_mine'), 2, $r('app.media.user'), $r('app.media.user2')))
         }
         .barPosition(BarPosition.End)

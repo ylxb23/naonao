@@ -1,5 +1,9 @@
+import { Logger } from '../../common/Logger'
 import { AnniversaryCardItem, DISPLAY_MIDDLE_HEIGHT, DISPLAY_MIDDLE_WIDTH } from '../../viewmodel/card/Card'
 import { daysPassedOfDate, formatDate } from '../../viewmodel/card/Countdown'
+
+
+const logger: Logger = new Logger("Home")
 
 @Preview({
   title: "Anniversary"
@@ -7,6 +11,11 @@ import { daysPassedOfDate, formatDate } from '../../viewmodel/card/Countdown'
 @Component
 export struct AnniversaryCard {
   private info: AnniversaryCardItem
+
+
+  aboutToAppear() {
+    logger.info("get info: %s", JSON.stringify(this.info))
+  }
 
   build() {
     Flex({ justifyContent: FlexAlign.SpaceAround, wrap: FlexWrap.Wrap, alignContent: FlexAlign.SpaceEvenly }) {

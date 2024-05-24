@@ -1,4 +1,5 @@
 import { formatDate, nextAnniversaryDays } from '../../common/DateUtil';
+import { Logger } from '../../common/Logger';
 import {
   CountdownListCardItem,
   DISPLAY_BIG_HEIGHT,
@@ -12,14 +13,16 @@ import {
   NamedDateItem
 } from '../../viewmodel/card/Card'
 
+
+const logger: Logger = new Logger("Home")
+
+/**
+ * 生日倒计时面板
+ * 分成两列，左边是最近一个生日倒计时展示内容，右边是所有生日倒计时列表。
+ */
 @Preview({
   title: "BirthdayCountdown"
 })
-
-  /**
-   * 生日倒计时面板
-   * 分成两列，左边是最近一个生日倒计时展示内容，右边是所有生日倒计时列表。
-   */
 @Component
 export struct CountdownListCard {
   info: CountdownListCardItem
@@ -28,6 +31,10 @@ export struct CountdownListCard {
   constructor(item: CountdownListCardItem) {
     super()
     this.info = item
+  }
+
+  aboutToAppear() {
+    logger.info("get info: %s", JSON.stringify(this.info))
   }
 
   build() {

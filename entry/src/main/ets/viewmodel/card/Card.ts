@@ -97,10 +97,10 @@ export class CountdownCardItem extends AbsCard {
   title: string
   date: Date
 
-  constructor(t: string, d: Date) {
+  constructor(title: string, date: Date) {
     super(CardTypeEnum.Anniversary)
-    this.title = t
-    this.date = d
+    this.title = title
+    this.date = date
   }
 }
 
@@ -111,10 +111,10 @@ export class CountdownListCardItem extends AbsCard {
   title: string
   list: NamedDateItem[]
 
-  constructor(t: string, l: NamedDateItem[]) {
+  constructor(title: string, list: NamedDateItem[]) {
     super(CardTypeEnum.CountdownList)
-    this.title = t
-    this.list = l
+    this.title = title
+    this.list = list
   }
 }
 
@@ -163,7 +163,7 @@ enum SizeEnum {
 /**
  * 卡片类型枚举
  */
-enum CardTypeEnum {
+export enum CardTypeEnum {
   /**
    * 纪念日卡片
    */

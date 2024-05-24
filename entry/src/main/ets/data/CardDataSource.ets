@@ -1,5 +1,9 @@
 
+import { Logger } from '../common/Logger'
 import { AbsCard } from '../viewmodel/card/Card'
+
+const logger: Logger = new Logger('CardDataSource')
+
 class BasicCardDataSource implements IDataSource {
   private listeners: DataChangeListener[] = []
 
@@ -45,7 +49,7 @@ class BasicCardDataSource implements IDataSource {
       listener.onDataMove(from, to)
     })
   }
-  getData(index: number) {
+  getData(_index: number) {
     throw new Error('Method not implemented.')
   }
 
@@ -55,14 +59,15 @@ class BasicCardDataSource implements IDataSource {
 }
 
 /**
- *
+ * 卡片内容数据源
  */
-class CustomCardDataSource extends BasicCardDataSource {
+export class CustomCardDataSource extends BasicCardDataSource {
   cards: Array<AbsCard> = []
 
   constructor(cards: Array<AbsCard>) {
     super()
     this.cards = cards
+    logger.info("Get list: %s", JSON.stringify(this.cards))
   }
 
   getData(index: number) {

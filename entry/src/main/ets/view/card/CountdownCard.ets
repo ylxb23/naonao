@@ -1,5 +1,9 @@
+import { Logger } from '../../common/Logger'
 import { CountdownCardItem, DISPLAY_MIDDLE_HEIGHT, DISPLAY_MIDDLE_WIDTH } from '../../viewmodel/card/Card'
 import { formatDate, lastDaysOfDate } from '../../viewmodel/card/Countdown'
+
+
+const logger: Logger = new Logger("Home")
 
 @Preview({
   title: "Countdown"
@@ -7,6 +11,11 @@ import { formatDate, lastDaysOfDate } from '../../viewmodel/card/Countdown'
 @Component
 export struct CountdownCard {
   private info: CountdownCardItem
+
+
+  aboutToAppear() {
+    logger.info("get info: %s", JSON.stringify(this.info))
+  }
 
   build() {
     Flex({ justifyContent: FlexAlign.SpaceAround, wrap: FlexWrap.Wrap, alignContent: FlexAlign.SpaceEvenly }) {
