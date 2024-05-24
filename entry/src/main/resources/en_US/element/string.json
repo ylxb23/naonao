@@ -47,6 +47,10 @@
     {
       "name": "DaysPassed",
       "value": "days passed"
+    },
+    {
+      "name": "Card_AddCard",
+      "value": "Add Card"
     }
   ]
 }

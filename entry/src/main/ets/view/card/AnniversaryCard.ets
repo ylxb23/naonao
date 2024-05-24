@@ -56,18 +56,11 @@ export struct AnniversaryCard {
     .alignItems(HorizontalAlign.Center)
     .borderRadius(10)
     .backgroundColor('#ccc')
-    .bindMenu([
-      {
-        value: '编辑',
-        action: () => {
-          // 改变当前卡片的状态为编辑状态
-        }
-      }, {
-      value: '删除',
-      action: () => {
-        // 移除当前元素，并刷新页面
-      }
-    }
-    ])
+    .priorityGesture(LongPressGesture({repeat: false}).onAction((e) => {
+      // 长按事件动作
+
+    }).onActionEnd((e) => {
+      //
+    }), GestureMask.Normal)
   }
 }

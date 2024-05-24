@@ -5,15 +5,16 @@ import {
   AbsCard,
   AnniversaryCardItem,
   CountdownCardItem,
-  CountdownListCardItem
+  CountdownListCardItem,
+  EmptyCardItem,
 } from '../viewmodel/card/Card'
 import { Logger } from '../common/Logger'
-import distributedObject from '@ohos.data.distributedDataObject';
-import { CustomCardDataSource } from '../data/CardDataSource'
+import distributedKVStore from '@ohos.data.distributedKVStore';
+import { BUNDLE_NAME, CARD_DATA_STORE_KEY } from '../common/Constants'
+import { EmptyCard } from '../view/card/EmptyCard'
 
 const logger: Logger = new Logger("Home")
-const stored_cards_key = 'custom.stored_cards'
-let dataObject: distributedObject.DataObject | null
+let kvManager: distributedKVStore.KVManager | null
 
 @Preview({
   title: "Home"
@@ -35,21 +36,42 @@ export struct Home {
   @State cards: AbsCard[] = []
 
   mockInitCards() {
-    this.cards.push(this.birthdayList)
-    this.cards.push(this.yearEndCountdown)
-    this.cards.push(this.marryDate, this.birthDate, this.workInDate)
+    const kvConfig = {
+      context: getContext(this),
+      bundleName: BUNDLE_NAME,
+    }
+    const options = {
+      createIfMissing: true,
+      encrypt: false,
+      backup: false,
+      autoSync: true,
+      kvStoreType: distributedKVStore.KVStoreType.SINGLE_VERSION,
+      securityLevel: distributedKVStore.SecurityLevel.S2,
+    };
+    kvManager = distributedKVStore.createKVManager(kvConfig)
+    let kvStore
+    kvManager.getKVStore(CARD_DATA_STORE_KEY, options).then((store) => {
+      kvStore = store
+    })
+    logger.info("KV存储器类型: %s", typeof kvStore)
+
+    // this.cards.push(this.birthdayList)
+    // this.cards.push(this.yearEndCountdown)
+    // this.cards.push(this.marryDate, this.birthDate, this.workInDate)
+    if (this.cards.length == 0) {
+      this.cards.push(new EmptyCardItem())
+    }
   }
 
   aboutToAppear() {
     this.mockInitCards()
     logger.debug("获取到卡片列表: %s", JSON.stringify(this.cards))
-    dataObject = distributedObject.create(getContext(this), this.cards)
     // TODO: 变更及保存
-    dataObject.save('local').then((result) => {
-      logger.info("卡片数据存储到本地，结果: %{public}s", result)
-    }).catch((e) => {
-      logger.error("卡片数据存储到本地异常, error code: %s, error message: %s", e.code, e.message)
-    })
+    // dataObject.save('local').then((result) => {
+    //   logger.info("卡片数据存储到本地，结果: %{public}s", result)
+    // }).catch((e) => {
+    //   logger.error("卡片数据存储到本地异常, error code: %s, error message: %s", e.code, e.message)
+    // })
   }
 
   build() {
@@ -64,6 +86,9 @@ export struct Home {
               .margin(10)
           } else if (item instanceof CountdownListCardItem) {
             CountdownListCard({ info: item as CountdownListCardItem }).width(360).height(150)
+              .margin(10)
+          } else if(item instanceof EmptyCardItem) {
+            EmptyCard().width(360).height(150)
               .margin(10)
           } else {
             Text("没找到:" + item.type).fontSize(99).fontColor(Color.Red)

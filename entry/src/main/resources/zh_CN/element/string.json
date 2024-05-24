@@ -47,6 +47,10 @@
     {
       "name": "DaysPassed",
       "value": "天了"
+    },
+    {
+      "name": "Card_AddCard",
+      "value": "添加卡片"
     }
   ]
 }

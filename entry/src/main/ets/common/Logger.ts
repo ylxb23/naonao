@@ -3,7 +3,6 @@ import hilog from '@ohos.hilog'
 export class Logger {
   private domain: number
   private tag: string
-  private format: string = `%{public}s, %{public}s`
 
   constructor(tag: string) {
     this.tag = tag
@@ -14,23 +13,23 @@ export class Logger {
     return hilog.isLoggable(this.domain, this.tag, level)
   }
 
-  debug(...args: any[]) {
-    hilog.debug(this.domain, this.tag, this.format, args)
+  debug(format: string, ...args: any[]) {
+    hilog.debug(this.domain, this.tag, format, args)
   }
 
-  info(...args: any[]) {
-    hilog.info(this.domain, this.tag, this.format, args)
+  info(format: string, ...args: any[]) {
+    hilog.info(this.domain, this.tag, format, args)
   }
 
-  warn(...args: any[]) {
-    hilog.warn(this.domain, this.tag, this.format, args)
+  warn(format: string, ...args: any[]) {
+    hilog.warn(this.domain, this.tag, format, args)
   }
 
-  error(...args: any[]) {
-    hilog.error(this.domain, this.tag, this.format, args)
+  error(format: string, ...args: any[]) {
+    hilog.error(this.domain, this.tag, format, args)
   }
 
-  fatal(...args: any[]) {
-    hilog.fatal(this.domain, this.tag, this.format, args)
+  fatal(format: string, ...args: any[]) {
+    hilog.fatal(this.domain, this.tag, format, args)
   }
 }

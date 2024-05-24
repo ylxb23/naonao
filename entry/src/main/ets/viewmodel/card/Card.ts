@@ -37,6 +37,15 @@ export abstract class AbsCard {
 }
 
 /**
+ * 空卡片
+ */
+export class EmptyCardItem extends AbsCard {
+  constructor() {
+    super(CardTypeEnum.Empty)
+  }
+}
+
+/**
  * 纪念日使用的数据结构
  */
 export class AnniversaryCardItem extends AbsCard {
@@ -164,6 +173,10 @@ enum SizeEnum {
  * 卡片类型枚举
  */
 export enum CardTypeEnum {
+  /**
+   * 空卡片
+   */
+  Empty,
   /**
    * 纪念日卡片
    */
