@@ -55,6 +55,6 @@ export struct CountdownCard {
     .height(DISPLAY_MIDDLE_HEIGHT)
     .alignItems(HorizontalAlign.Center)
     .borderRadius(10)
-    .backgroundColor('#ccc')
+    // .backgroundColor('#ccc')
   }
 }

@@ -55,12 +55,11 @@ export struct Home {
     })
     logger.info("KV存储器类型: %s", typeof kvStore)
 
-    // this.cards.push(this.birthdayList)
-    // this.cards.push(this.yearEndCountdown)
-    // this.cards.push(this.marryDate, this.birthDate, this.workInDate)
-    if (this.cards.length == 0) {
-      this.cards.push(new EmptyCardItem())
-    }
+    this.cards.push(this.birthdayList)
+    this.cards.push(this.yearEndCountdown)
+    this.cards.push(this.marryDate, this.birthDate, this.workInDate)
+
+    this.cards.push(new EmptyCardItem())
   }
 
   aboutToAppear() {
@@ -95,6 +94,6 @@ export struct Home {
           }
         })
       }
-    }.width('100%')
+    }.width('100%').height('100%')
   }
 }

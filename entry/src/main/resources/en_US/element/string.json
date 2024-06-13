@@ -51,6 +51,22 @@
     {
       "name": "Card_AddCard",
       "value": "Add Card"
+    },
+    {
+      "name": "Card_InputTitle",
+      "value": "Input Title"
+    },
+    {
+      "name": "Card_InputName",
+      "value": "Input Name"
+    },
+    {
+      "name": "Cancel",
+      "value": "Cancel"
+    },
+    {
+      "name": "Confirm",
+      "value": "Confirm"
     }
   ]
 }

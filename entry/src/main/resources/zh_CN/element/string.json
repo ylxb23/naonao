@@ -51,6 +51,22 @@
     {
       "name": "Card_AddCard",
       "value": "添加卡片"
+    },
+    {
+      "name": "Card_InputTitle",
+      "value": "输入标题"
+    },
+    {
+      "name": "Card_InputName",
+      "value": "输入名字"
+    },
+    {
+      "name": "Cancel",
+      "value": "取消"
+    },
+    {
+      "name": "Confirm",
+      "value": "确认"
     }
   ]
 }
