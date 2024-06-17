@@ -67,6 +67,10 @@
     {
       "name": "Confirm",
       "value": "确认"
+    },
+    {
+      "name": "Card_ChooseCardType",
+      "value": "选择卡片类型"
     }
   ]
 }

@@ -6,13 +6,15 @@ export function nextAnniversaryDays(date: Date, _of?: Date | null): number {
     _of = new Date()
   }
   let _date = new Date(date)
+  _date.setHours(23, 59, 59, 999);  // 当天最后时间点
+  _of.setHours(23, 59, 58, 999);  // 当天最后时间点
 
   _date.setFullYear(_of.getFullYear())
   if (_of.getTime() > _date.getTime()) {
     // 今年生日已过，年份+1，计算到明年的天数
     _date.setFullYear(_of.getFullYear() + 1)
   }
-  return Math.ceil((_date.getTime() - _of.getTime()) / DAY_OF_TIME_MILLISECOND)
+  return Math.floor((_date.getTime() - _of.getTime()) / DAY_OF_TIME_MILLISECOND)
 }
 
 

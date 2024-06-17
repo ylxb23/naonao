@@ -63,14 +63,16 @@ export struct AnniversaryCardEdit {
         })
       Blank()
         .onClick(async (_e) => {
+          logger.debug("打开图片选择器...");
           let options: picker.PhotoSelectOptions = new picker.PhotoSelectOptions()
           options.MIMEType = picker.PhotoViewMIMETypes.IMAGE_TYPE
           options.maxSelectNumber = 1
           let photoPicker = new picker.PhotoViewPicker()
           await photoPicker.select(options).then((result: picker.PhotoSelectResult) => {
-            logger.debug("photoPickOne, pick result: %s", JSON.stringify(result))
-            let selected = result.photoUris.length > 0 ? result.photoUris[0] : ''
-            fs.open(selected, fs.OpenMode.READ_ONLY, (err, file) => {
+            logger.debug("photoPickOne, pick result: %s", JSON.stringify(result));
+            let selected = result.photoUris.length > 0 ? result.photoUris[0] : '';
+            this.cardItem.backgroundImgUri = selected;
+            fs.open(selected, fs.OpenMode.READ_ONLY, (err: Error, file: fs.File) => {
               if (err) {
                 logger.error("打开选择的图片失败, err: %s, %s", err.name, err.message)
               } else {
@@ -79,9 +81,9 @@ export struct AnniversaryCardEdit {
                 let imagePix: Promise<PixelMap> = imageSource.createPixelMap()
                 imagePix.then((value: image.PixelMap) => {
                   this.imagePixMap = value
-                  this.cardItem.backgroundImg = this.imagePixMap
                   logger.info("get image pixel map: ", this.imagePixMap.getPixelBytesNumber())
-                })
+                });
+                fs.close(file);
               }
             });
           }).catch((err) => {

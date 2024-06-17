@@ -67,6 +67,10 @@
     {
       "name": "Confirm",
       "value": "Confirm"
+    },
+    {
+      "name": "Card_ChooseCardType",
+      "value": "Choose Card Type"
     }
   ]
 }

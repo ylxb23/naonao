@@ -1,5 +1,4 @@
 import hilog from '@ohos.hilog'
-import image from '@ohos.multimedia.image'
 import { nextAnniversaryDays } from '../../common/DateUtil'
 
 export const DISPLAY_BIG_WIDTH = 360
@@ -52,7 +51,7 @@ export class EmptyCardItem extends AbsCard {
 export class AnniversaryCardItem extends AbsCard {
   title: string
   date: Date
-  backgroundImg: string | image.PixelMap
+  backgroundImgUri: string
 
   constructor(t: string, d: Date) {
     super(CardTypeEnum.Anniversary)

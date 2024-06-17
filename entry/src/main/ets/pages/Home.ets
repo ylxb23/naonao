@@ -51,6 +51,7 @@ export struct Home {
     kvManager = distributedKVStore.createKVManager(kvConfig)
     let kvStore
     kvManager.getKVStore(CARD_DATA_STORE_KEY, options).then((store) => {
+      logger.debug("get kv store: %v", store)
       kvStore = store
     })
     logger.info("KV存储器类型: %s", typeof kvStore)
