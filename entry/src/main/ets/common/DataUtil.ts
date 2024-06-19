@@ -104,14 +104,6 @@ export function insertCardItem(context, item: AbsCard): void {
       await logger.error("执行创建表语句失败: %s", JSON.stringify(err));
     });
 
-    let allTablesPromise = liteDb.querySql(".tables ;")
-    await allTablesPromise.then((resultSet) => {
-      logger.debug("所有列：%s", JSON.stringify(resultSet.columnNames));
-      while(resultSet.goToNextRow()) {
-        logger.debug("表有: %s", resultSet)
-      }
-    })
-
     // get max id
     let predicates = new relationalStore.RdbPredicates(CARD_TABLE);
     predicates.orderByDesc(CARD_TABLE_COLUMN_ID).limitAs(1);
@@ -123,28 +115,26 @@ export function insertCardItem(context, item: AbsCard): void {
         resultSet.goToFirstRow();
         maxId = resultSet.getLong(resultSet.getColumnIndex(CARD_TABLE_COLUMN_ID));
         //
-        logger.info("查询卡片成功: %s", JSON.stringify(resultSet));
         let cards = readCardItemListFromDbRow(resultSet);
         logger.info("获取所有卡片列表: %s", JSON.stringify(cards));
       }
       // 插入最新的
       let data = JSON.stringify(item);
       const columnItem = {
-        CARD_TABLE_COLUMN_ID: maxId + 1,
-        CARD_TABLE_COLUMN_ORDER: maxId + 1,
-        CARD_TABLE_COLUMN_TYPE: item.type,
-        CARD_TABLE_COLUMN_DATA: data
+        "ORDER_": maxId + 1,
+        "TYPE_": item.type,
+        "DATA_": data
       }
       // 插入行
-      let insertPromise = liteDb.insert("CARD", columnItem)
-      await insertPromise.then((rowId) => {
-        logger.info("卡片插入成功: rowId: %d, data: %s", rowId, data);
-      }).catch((err) => {
+      logger.info("准备插入CARD的数据: %s", JSON.stringify(columnItem));
+      liteDb.insert(CARD_TABLE, columnItem, (err, rowId) => {
         if (err) {
           logger.error("插入卡片失败, %d, %s", err.code, err.message);
           return;
+        } else {
+          logger.info("卡片插入成功: rowId: %d, data: %s", rowId, data);
         }
-      });
+      })
     }).catch((err) => {
       if (err) {
         logger.error("查询卡片失败, %d, %s", err.code, err.message);
@@ -163,15 +153,20 @@ function readCardItemListFromDbRow(resultSet: relationalStore.ResultSet): AbsCar
       let type = resultSet.getLong(resultSet.getColumnIndex(CARD_TABLE_COLUMN_TYPE));
       let data = resultSet.getString(resultSet.getColumnIndex(CARD_TABLE_COLUMN_DATA));
       let card: AbsCard;
+      logger.info("card types: %d, %s", CardTypeEnum.Anniversary.valueOf(), CardTypeEnum.Anniversary.toString())
       switch (type) {
         case CardTypeEnum.Anniversary.valueOf():
           card = JSON.parse(data) as AnniversaryCardItem;
+          break;
         case CardTypeEnum.AnniversaryList.valueOf():
           card = JSON.parse(data) as AnniversaryListCardItem;
+          break;
         case CardTypeEnum.Countdown.valueOf():
           card = JSON.parse(data) as CountdownCardItem;
+          break;
         case CardTypeEnum.CountdownList.valueOf():
           card = JSON.parse(data) as CountdownListCardItem;
+          break;
         default:
           logger.error("未知卡片类型[type=%d]: %s", type, data);
       }
