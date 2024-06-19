@@ -11,6 +11,7 @@ import {
   CountdownListCardItem,
 } from '../../viewmodel/card/Card';
 import { random, randomLower } from '../../common/Tool';
+import { insertCardItem } from '../../common/DataUtil';
 
 
 const logger: Logger = new Logger("CardAddSelection")
@@ -92,6 +93,7 @@ struct CardAddSelection {
 
                         logger.info("实际保存的卡片信息为from: %s", JSON.stringify(this.fromCard))
                         logger.info("实际保存的卡片信息为real: %s", JSON.stringify(realCardItem))
+                        insertCardItem(getContext(this), this.fromCard);
                       }).catch((err) => {
                       logger.warn("图片复制失败, message: %s, name: %d", err.message, err.code);
                     });

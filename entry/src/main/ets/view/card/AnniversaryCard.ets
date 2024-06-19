@@ -6,6 +6,7 @@ import { Logger } from '../../common/Logger'
 import { AnniversaryCardItem, DISPLAY_MIDDLE_HEIGHT, DISPLAY_MIDDLE_WIDTH } from '../../viewmodel/card/Card'
 import { daysPassedOfDate, formatDate } from '../../viewmodel/card/Countdown'
 import router from '@ohos.router'
+import { loadDiskImageToPixelMap } from '../../common/DataUtil'
 
 const logger: Logger = new Logger("AnniversaryCard")
 
@@ -133,6 +134,18 @@ export struct AnniversaryCard {
   private info: AnniversaryCardItem
 
   aboutToAppear() {
+    logger.debug("卡片内容为: %s", JSON.stringify(this.info))
+    if(this.info.backgroundImgUri === undefined) {
+      logger.debug("卡片内容中的 backgroundImgUri 未定义")
+    } else if(this.info.backgroundImgUri === null) {
+      logger.debug("卡片内容中的 backgroundImgUri 为null")
+    } else if(this.info.backgroundImgUri == '') {
+      logger.debug("卡片内容中的 backgroundImgUri 为空")
+    } else {
+      if(!fs.accessSync(this.info.backgroundImgUri)) {
+        logger.warn("图片文件不存在: %s", this.info.backgroundImgUri);
+      }
+    }
   }
 
   build() {
@@ -144,48 +157,59 @@ export struct AnniversaryCard {
   @Builder
   Anniversary(info: AnniversaryCardItem) {
     Column() {
-      Text(info.title)
-        .textOverflow({ overflow: TextOverflow.Ellipsis })
+      Image($r('app.media.momo001'))
+        .zIndex(-1)
+        .position({ x: 0, y: 0 })
+        .height('100%')
         .width('100%')
-        .height(30)
-        .margin({ top: 5 })
-        .textAlign(TextAlign.Center)
-        .fontSize(20)
-        .fontColor(Color.White)
-        .fontWeight(FontWeight.Bold)
-        .opacity(CARD_FRONT_FONT_OPACITY)
-      Row() {
-        Text(daysPassedOfDate(info.date) + ' ')
+        .align(Alignment.Center)
+        .borderRadius(10)
+        .objectFit(ImageFit.Cover)
+      Column() {
+        Text(info.title)
+          .textOverflow({ overflow: TextOverflow.Ellipsis })
+          .width('100%')
+          .height(30)
+          .margin({ top: 5 })
           .textAlign(TextAlign.Center)
-          .fontSize(45)
-          .fontColor(Color.White)
-          .fontWeight(FontWeight.Bolder)
-          .opacity(CARD_FRONT_FONT_OPACITY)
-        Text($r('app.string.DaysPassed'))
-          .textAlign(TextAlign.Center)
-          .fontSize(10)
+          .fontSize(20)
           .fontColor(Color.White)
           .fontWeight(FontWeight.Bold)
           .opacity(CARD_FRONT_FONT_OPACITY)
-      }.width('100%').height(80).align(Alignment.Bottom).justifyContent(FlexAlign.Center)
+        Row() {
+          Text(daysPassedOfDate(info.date) + ' ')
+            .textAlign(TextAlign.Center)
+            .fontSize(45)
+            .fontColor(Color.White)
+            .fontWeight(FontWeight.Bolder)
+            .opacity(CARD_FRONT_FONT_OPACITY)
+          Text($r('app.string.DaysPassed'))
+            .textAlign(TextAlign.Center)
+            .fontSize(10)
+            .fontColor(Color.White)
+            .fontWeight(FontWeight.Bold)
+            .opacity(CARD_FRONT_FONT_OPACITY)
+        }.width('100%').height(80).align(Alignment.Bottom).justifyContent(FlexAlign.Center)
 
-      Text(formatDate(info.date))
-        .width('100%')
-        .height(30)
-        .padding({ top: 5 })
-        .textAlign(TextAlign.Center)
-        .fontSize(20)
-        .fontColor(Color.White)
-        .fontWeight(FontWeight.Bold)
-        .opacity(CARD_FRONT_FONT_OPACITY)
+        Text(formatDate(info.date))
+          .width('100%')
+          .height(30)
+          .margin({ top: 5})
+          .textAlign(TextAlign.Center)
+          .fontSize(20)
+          .fontColor(Color.White)
+          .fontWeight(FontWeight.Bold)
+          .opacity(CARD_FRONT_FONT_OPACITY)
+      }
+      .position({ x: 0, y: 0 })
+      .backgroundColor('#ccc')
+      .borderRadius(10)
+      .opacity(1-CARD_FRONT_FONT_OPACITY)
     }
     .width(DISPLAY_MIDDLE_WIDTH)
     .height(DISPLAY_MIDDLE_HEIGHT)
     .alignItems(HorizontalAlign.Center)
     .borderRadius(10)
-    .backgroundColor('#ccc')
-    .backgroundImageSize({ height: DISPLAY_MIDDLE_HEIGHT, width: DISPLAY_MIDDLE_WIDTH })
-    .backgroundImagePosition(Alignment.Center)
     .priorityGesture(LongPressGesture({ repeat: false }).onAction((_e) => {
       // 长按事件动作
       // TODO: 将当前显示对象替换成编辑模式

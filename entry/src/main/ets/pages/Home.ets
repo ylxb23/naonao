@@ -31,6 +31,7 @@ export struct Home {
   marryDate: AnniversaryCardItem = new AnniversaryCardItem('结婚已经', new Date('2022-03-03'))
   birthDate: AnniversaryCardItem = new AnniversaryCardItem('墨墨出生', new Date('2023-08-02'))
   workInDate: AnniversaryCardItem = new AnniversaryCardItem('已经入职', new Date('2023-04-24'))
+  customDate: AnniversaryCardItem = new AnniversaryCardItem('今天哇', new Date('2024-06-17'), "/data/storage/el2/base/haps/entry/files/cards/j4ntijzrejbuuo6yfpyvkcbvdae8xb8l")
 
   // 当前页面需要展示所有卡片列表
   @State cards: AbsCard[] = []
@@ -58,7 +59,8 @@ export struct Home {
 
     this.cards.push(this.birthdayList)
     this.cards.push(this.yearEndCountdown)
-    this.cards.push(this.marryDate, this.birthDate, this.workInDate)
+    // this.cards.push(this.marryDate, this.birthDate, this.workInDate, this.customDate)
+    this.cards.push(this.customDate)
 
     this.cards.push(new EmptyCardItem())
   }
