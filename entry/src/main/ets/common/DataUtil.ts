@@ -11,8 +11,10 @@ import {
   CountdownCardItem,
   CountdownListCardItem
 } from '../viewmodel/card/Card';
+import { sqlite } from '../entryability/EntryAbility';
 
 let logger: Logger = new Logger("DataUtil");
+let naonaoDb: relationalStore.RdbStore = sqlite
 
 export function copyPickedFile(srcUri: string | undefined, dstDir: string): string | undefined {
   let dstUri = dstDir + "/cards";
@@ -146,6 +148,11 @@ export function insertCardItem(context, item: AbsCard): void {
   });
 }
 
+/**
+ * 从查询结果中读取出全部的卡片列表
+ * @param resultSet
+ * @returns
+ */
 function readCardItemListFromDbRow(resultSet: relationalStore.ResultSet): AbsCard[] {
   let list: Array<AbsCard> = [];
   if (resultSet.goToFirstRow()) {
@@ -156,10 +163,12 @@ function readCardItemListFromDbRow(resultSet: relationalStore.ResultSet): AbsCar
       logger.info("card types: %d, %s", CardTypeEnum.Anniversary.valueOf(), CardTypeEnum.Anniversary.toString())
       switch (type) {
         case CardTypeEnum.Anniversary.valueOf():
-          card = JSON.parse(data) as AnniversaryCardItem;
+          let temp1: AnniversaryCardItem = JSON.parse(data) as AnniversaryCardItem;
+          card = new AnniversaryCardItem(temp1.title, new Date(temp1.date), temp1.backgroundImgUri);
           break;
         case CardTypeEnum.AnniversaryList.valueOf():
-          card = JSON.parse(data) as AnniversaryListCardItem;
+          let temp2: AnniversaryListCardItem = JSON.parse(data) as AnniversaryListCardItem;
+          card = new AnniversaryListCardItem(temp2.title, temp2.list);
           break;
         case CardTypeEnum.Countdown.valueOf():
           card = JSON.parse(data) as CountdownCardItem;
@@ -180,8 +189,16 @@ function readCardItemListFromDbRow(resultSet: relationalStore.ResultSet): AbsCar
 
 
 // 加载所有卡片列表
-export function loadAllCardItems(): AbsCard[] {
-
-
-  return [];
+export async function loadAllCardItems(): Promise<AbsCard[]> {
+  let predicates = new relationalStore.RdbPredicates(CARD_TABLE);
+  predicates.orderByDesc(CARD_TABLE_COLUMN_ORDER);
+  let resultSetPromise = naonaoDb.query(predicates, [CARD_TABLE_COLUMN_ID, CARD_TABLE_COLUMN_ORDER, CARD_TABLE_COLUMN_TYPE, CARD_TABLE_COLUMN_DATA])
+  var cards: AbsCard[] = [];
+  await resultSetPromise.then((resultSet: relationalStore.ResultSet) => {
+    cards = readCardItemListFromDbRow(resultSet);
+    logger.info("获取所有卡片列表: %s", JSON.stringify(cards));
+  }).catch((err) => {
+    logger.error("查询所有卡片列表结果异常, code: %d, message: %s", err.code, err.message);
+  });
+  return cards;
 }

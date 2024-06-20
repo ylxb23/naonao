@@ -8,7 +8,7 @@ import relationalStore from '@ohos.data.relationalStore';
 const logger: Logger = new Logger('EntryAbility')
 let kvManager: distributedKVStore.KVManager;
 let kvStore: distributedKVStore.SingleKVStore;
-var sqlLite: relationalStore.RdbStore;
+export var sqlite: relationalStore.RdbStore;
 
 export default class EntryAbility extends UIAbility {
 
@@ -68,12 +68,12 @@ export default class EntryAbility extends UIAbility {
     }
     relationalStore.getRdbStore(this.context, STORE_CONFIG).then((rdbStore) => {
       logger.info("获取RdbStore成功");
-      sqlLite = rdbStore;
-      sqlLite.executeSql("DROP TABLE CARD IF EXISTS;").then(() => {
-        logger.info("删除CARD表成功...");
-      }).catch((err) => {
-        logger.warn("删除CARD表失败...")
-      });
+      sqlite = rdbStore;
+      // sqlite.executeSql("DROP TABLE CARD IF EXISTS;").then(() => {
+      //   logger.info("删除CARD表成功...");
+      // }).catch((err) => {
+      //   logger.warn("删除CARD表失败...")
+      // });
     }).catch((err) => {
       logger.error("获取RdbStore失败, %d, %s", err.code, err.message);
     });

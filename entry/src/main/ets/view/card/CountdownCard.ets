@@ -1,6 +1,6 @@
 import { Logger } from '../../common/Logger'
 import { CountdownCardItem, DISPLAY_MIDDLE_HEIGHT, DISPLAY_MIDDLE_WIDTH } from '../../viewmodel/card/Card'
-import { formatDate, lastDaysOfDate } from '../../viewmodel/card/Countdown'
+import { formatDate, lastDaysOfDate } from '../../common/DateUtil'
 
 
 const logger: Logger = new Logger("Home")

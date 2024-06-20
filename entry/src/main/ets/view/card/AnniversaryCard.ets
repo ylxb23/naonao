@@ -4,9 +4,8 @@ import fs from '@ohos.file.fs'
 import { CARD_FRONT_FONT_OPACITY } from '../../common/Constants'
 import { Logger } from '../../common/Logger'
 import { AnniversaryCardItem, DISPLAY_MIDDLE_HEIGHT, DISPLAY_MIDDLE_WIDTH } from '../../viewmodel/card/Card'
-import { daysPassedOfDate, formatDate } from '../../viewmodel/card/Countdown'
+import { daysPassedOfDate, formatDate } from '../../common/DateUtil'
 import router from '@ohos.router'
-import { loadDiskImageToPixelMap } from '../../common/DataUtil'
 
 const logger: Logger = new Logger("AnniversaryCard")
 
@@ -134,15 +133,16 @@ export struct AnniversaryCard {
   private info: AnniversaryCardItem
 
   aboutToAppear() {
+    this.info = new AnniversaryCardItem("wakaka", new Date())
     logger.debug("卡片内容为: %s", JSON.stringify(this.info))
-    if(this.info.backgroundImgUri === undefined) {
+    if (this.info.backgroundImgUri === undefined) {
       logger.debug("卡片内容中的 backgroundImgUri 未定义")
-    } else if(this.info.backgroundImgUri === null) {
+    } else if (this.info.backgroundImgUri === null) {
       logger.debug("卡片内容中的 backgroundImgUri 为null")
-    } else if(this.info.backgroundImgUri == '') {
+    } else if (this.info.backgroundImgUri == '') {
       logger.debug("卡片内容中的 backgroundImgUri 为空")
     } else {
-      if(!fs.accessSync(this.info.backgroundImgUri)) {
+      if (!fs.accessSync(this.info.backgroundImgUri)) {
         logger.warn("图片文件不存在: %s", this.info.backgroundImgUri);
       }
     }
@@ -157,14 +157,24 @@ export struct AnniversaryCard {
   @Builder
   Anniversary(info: AnniversaryCardItem) {
     Column() {
-      Image($r('app.media.momo001'))
-        .zIndex(-1)
+      Image(info.backgroundImgUri)
+        .zIndex(-2)
         .position({ x: 0, y: 0 })
         .height('100%')
         .width('100%')
         .align(Alignment.Center)
         .borderRadius(10)
         .objectFit(ImageFit.Cover)
+      Column() {
+      }
+      .zIndex(-1)
+      .position({ x: 0, y: 0 })
+      .height('100%')
+      .width('100%')
+      .backgroundColor('#eee')
+      .borderRadius(10)
+      .opacity(1 - CARD_FRONT_FONT_OPACITY)
+
       Column() {
         Text(info.title)
           .textOverflow({ overflow: TextOverflow.Ellipsis })
@@ -175,36 +185,31 @@ export struct AnniversaryCard {
           .fontSize(20)
           .fontColor(Color.White)
           .fontWeight(FontWeight.Bold)
-          .opacity(CARD_FRONT_FONT_OPACITY)
         Row() {
           Text(daysPassedOfDate(info.date) + ' ')
             .textAlign(TextAlign.Center)
             .fontSize(45)
             .fontColor(Color.White)
             .fontWeight(FontWeight.Bolder)
-            .opacity(CARD_FRONT_FONT_OPACITY)
           Text($r('app.string.DaysPassed'))
             .textAlign(TextAlign.Center)
             .fontSize(10)
             .fontColor(Color.White)
             .fontWeight(FontWeight.Bold)
-            .opacity(CARD_FRONT_FONT_OPACITY)
         }.width('100%').height(80).align(Alignment.Bottom).justifyContent(FlexAlign.Center)
 
         Text(formatDate(info.date))
           .width('100%')
           .height(30)
-          .margin({ top: 5})
+          .margin({ top: 5 })
           .textAlign(TextAlign.Center)
           .fontSize(20)
           .fontColor(Color.White)
           .fontWeight(FontWeight.Bold)
-          .opacity(CARD_FRONT_FONT_OPACITY)
       }
       .position({ x: 0, y: 0 })
-      .backgroundColor('#ccc')
       .borderRadius(10)
-      .opacity(1-CARD_FRONT_FONT_OPACITY)
+      .opacity(CARD_FRONT_FONT_OPACITY)
     }
     .width(DISPLAY_MIDDLE_WIDTH)
     .height(DISPLAY_MIDDLE_HEIGHT)

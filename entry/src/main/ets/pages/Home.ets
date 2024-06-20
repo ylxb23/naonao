@@ -9,12 +9,10 @@ import {
   EmptyCardItem,
 } from '../viewmodel/card/Card'
 import { Logger } from '../common/Logger'
-import distributedKVStore from '@ohos.data.distributedKVStore';
-import { BUNDLE_NAME, CARD_DATA_STORE_KEY } from '../common/Constants'
 import { EmptyCard } from '../view/card/EmptyCard'
+import { loadAllCardItems } from '../common/DataUtil'
 
 const logger: Logger = new Logger("Home")
-let kvManager: distributedKVStore.KVManager | null
 
 @Preview({
   title: "Home"
@@ -36,32 +34,19 @@ export struct Home {
   // 当前页面需要展示所有卡片列表
   @State cards: AbsCard[] = []
 
-  mockInitCards() {
-    const kvConfig = {
-      context: getContext(this),
-      bundleName: BUNDLE_NAME,
-    }
-    const options = {
-      createIfMissing: true,
-      encrypt: false,
-      backup: false,
-      autoSync: true,
-      kvStoreType: distributedKVStore.KVStoreType.SINGLE_VERSION,
-      securityLevel: distributedKVStore.SecurityLevel.S2,
-    };
-    kvManager = distributedKVStore.createKVManager(kvConfig)
-    let kvStore
-    kvManager.getKVStore(CARD_DATA_STORE_KEY, options).then((store) => {
-      logger.debug("get kv store: %v", store)
-      kvStore = store
-    })
-    logger.info("KV存储器类型: %s", typeof kvStore)
+  async mockInitCards() {
 
-    this.cards.push(this.birthdayList)
-    this.cards.push(this.yearEndCountdown)
+    // this.cards.push(this.birthdayList)
+    // this.cards.push(this.yearEndCountdown)
     // this.cards.push(this.marryDate, this.birthDate, this.workInDate, this.customDate)
-    this.cards.push(this.customDate)
-
+    // this.cards.push(this.customDate)
+    let allCardPromise: Promise<AbsCard[]> = loadAllCardItems();
+    await allCardPromise.then((all: AbsCard[]) => {
+      logger.info("获取到所有卡片列表: %s", JSON.stringify(all));
+      for(let item of all) {
+        this.cards.push(item);
+      }
+    })
     this.cards.push(new EmptyCardItem())
   }
 

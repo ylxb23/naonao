@@ -53,11 +53,11 @@ export class AnniversaryCardItem extends AbsCard {
   date: Date
   backgroundImgUri: string
 
-  constructor(t: string, d: Date, u?: string) {
+  constructor(t: string, d: Date, img?: string) {
     super(CardTypeEnum.Anniversary)
     this.title = t
     this.date = d
-    this.backgroundImgUri = u
+    this.backgroundImgUri = img
   }
 }
 

@@ -1,5 +1,5 @@
 
-import { formatDate, lastDaysOfDate } from './Countdown';
+import { formatDate, lastDaysOfDate } from '../../common/DateUtil';
 /**
  * 展示在面板上的对象
  */
