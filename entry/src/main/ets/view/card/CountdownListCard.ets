@@ -25,23 +25,27 @@ const logger: Logger = new Logger("Home")
 })
 @Component
 export struct CountdownListCard {
-  info: CountdownListCardItem
+  private info?: CountdownListCardItem
   @StorageProp('fontSize') fontSize: number = 10;
-
-  constructor(item: CountdownListCardItem) {
-    super()
-    this.info = item
-  }
 
   aboutToAppear() {
     logger.info("get info: %s", JSON.stringify(this.info))
   }
 
   build() {
+    Flex({ justifyContent: FlexAlign.SpaceAround, wrap: FlexWrap.Wrap, alignContent: FlexAlign.SpaceEvenly }) {
+      if(this.info != undefined) {
+        this.CountdownList(this.info)
+      }
+    }
+  }
+
+  @Builder
+  CountdownList(info: CountdownListCardItem) {
     Row() {
       // 左边展示最近一个倒计时内容，和标题
       Column() {
-        this.TopItemDetail(this.info.title, getNextAnniversaryDayCountdownItem(this.info))
+        this.TopItemDetail(info.title, getNextAnniversaryDayCountdownItem(this.info))
       }
       .width(DISPLAY_BIG_LEFT_INFO_WIDTH)
       .height(DISPLAY_BIG_LEFT_INFO_HEIGHT)
@@ -56,10 +60,10 @@ export struct CountdownListCard {
       Column() {
         Scroll() {
           List() {
-            ForEach(getSortedAnniversaryDayCountdownList(this.info), (item, _idx) => {
+            ForEach(getSortedAnniversaryDayCountdownList(this.info), (di: NamedDateItem, _idx) => {
               ListItem() {
                 Column() {
-                  this.ItemListSummary(item)
+                  this.ItemListSummary(di)
                 }
               }
             })
@@ -77,6 +81,7 @@ export struct CountdownListCard {
     .borderRadius(10)
     .backgroundColor('#ccc')
   }
+
 
   @Builder
   TopItemDetail(title: string, item: NamedDateItem) {

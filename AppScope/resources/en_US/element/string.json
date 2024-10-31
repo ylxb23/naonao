@@ -3,6 +3,9 @@
     {
       "name": "app_name",
       "value": "NaoNao"
+    }, {
+      "name": "app_description",
+      "value": "Daily tools"
     }
   ]
 }

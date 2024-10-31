@@ -86,8 +86,8 @@ export struct AnniversaryCardEdit {
                 fs.close(file);
               }
             });
-          }).catch((err) => {
-            logger.error("pick one photo err: %s", err)
+          }).catch(() => {
+            logger.error("pick one photo err")
           })
         })
 
@@ -130,10 +130,13 @@ export struct AnniversaryCardEdit {
 })
 @Component
 export struct AnniversaryCard {
-  private info: AnniversaryCardItem
+  private info?: AnniversaryCardItem
 
   aboutToAppear() {
-    this.info = new AnniversaryCardItem("wakaka", new Date())
+    if(this.info == undefined) {
+      logger.error("卡片为空")
+      return
+    }
     logger.debug("卡片内容为: %s", JSON.stringify(this.info))
     if (this.info.backgroundImgUri === undefined) {
       logger.debug("卡片内容中的 backgroundImgUri 未定义")
@@ -150,7 +153,9 @@ export struct AnniversaryCard {
 
   build() {
     Flex({ justifyContent: FlexAlign.SpaceAround, wrap: FlexWrap.Wrap, alignContent: FlexAlign.SpaceEvenly }) {
-      this.Anniversary(this.info)
+      if(this.info != undefined) {
+        this.Anniversary(this.info)
+      }
     }
   }
 
@@ -171,7 +176,7 @@ export struct AnniversaryCard {
       .position({ x: 0, y: 0 })
       .height('100%')
       .width('100%')
-      .backgroundColor('#eee')
+      .backgroundColor('#999')
       .borderRadius(10)
       .opacity(1 - CARD_FRONT_FONT_OPACITY)
 
@@ -188,14 +193,15 @@ export struct AnniversaryCard {
         Row() {
           Text(daysPassedOfDate(info.date) + ' ')
             .textAlign(TextAlign.Center)
-            .fontSize(45)
+            .fontSize(40)
             .fontColor(Color.White)
             .fontWeight(FontWeight.Bolder)
           Text($r('app.string.DaysPassed'))
             .textAlign(TextAlign.Center)
-            .fontSize(10)
+            .fontSize(11)
             .fontColor(Color.White)
             .fontWeight(FontWeight.Bold)
+            .margin({top: 20})
         }.width('100%').height(80).align(Alignment.Bottom).justifyContent(FlexAlign.Center)
 
         Text(formatDate(info.date))

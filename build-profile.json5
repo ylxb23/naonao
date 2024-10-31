@@ -5,22 +5,22 @@
         "name": "default",
         "type": "HarmonyOS",
         "material": {
-          "certpath": "C:\\Users\\ylxb2\\.ohos\\config\\auto_debug_NaoNao_com.zero.hm.naonao_80086000306026853.cer",
-          "storePassword": "0000001A4F40BC4C74ADB8CA4E95B777C76CF5C922758E4EFC6DF4BB0B8601B89103195F1FF352C94C00",
+          "certpath": "C:\\Users\\ylxb2\\.ohos\\config\\default_NaoNao_sImESq-CBtD-YQi7kS7frcMdLhD0L8sAyymKR4DIt2o=.cer",
+          "storePassword": "0000001B3150CFDB92DFE94802D4FF9B50455A3BCDECF52BE2A672C13873653132BEE28C28B998657B2D28",
           "keyAlias": "debugKey",
-          "keyPassword": "0000001A131A807EB480EF543D667B0BC949F75B7A57E51890CA7A63929D586F456C61B4BE4B424C4ADC",
-          "profile": "C:\\Users\\ylxb2\\.ohos\\config\\auto_debug_NaoNao_com.zero.hm.naonao_80086000306026853.p7b",
+          "keyPassword": "0000001BCEA1BA5D0A587713A3D1D06A54AF963F28BF723728C36FA7BF041CAE786E8C637FF5EA944F562D",
+          "profile": "C:\\Users\\ylxb2\\.ohos\\config\\default_NaoNao_sImESq-CBtD-YQi7kS7frcMdLhD0L8sAyymKR4DIt2o=.p7b",
           "signAlg": "SHA256withECDSA",
-          "storeFile": "C:\\Users\\ylxb2\\.ohos\\config\\auto_debug_NaoNao_com.zero.hm.naonao_80086000306026853.p12"
+          "storeFile": "C:\\Users\\ylxb2\\.ohos\\config\\default_NaoNao_sImESq-CBtD-YQi7kS7frcMdLhD0L8sAyymKR4DIt2o=.p12"
         }
       }
     ],
-    "compileSdkVersion": 9,
-    "compatibleSdkVersion": 9,
     "products": [
       {
         "name": "default",
         "signingConfig": "default",
+        "compatibleSdkVersion": "4.0.0(10)",
+        "runtimeOS": "HarmonyOS"
       }
     ]
   },

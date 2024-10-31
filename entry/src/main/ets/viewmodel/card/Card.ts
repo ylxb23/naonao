@@ -64,10 +64,12 @@ export class AnniversaryCardItem extends AbsCard {
 export class NamedDateItem {
   name: string
   date: Date
+  avatar: string
 
-  constructor(n: string, d: Date) {
+  constructor(n: string, d: Date, a?: string) {
     this.name = n
     this.date = d
+    this.avatar = a
   }
   /**
    * 计算得出，每种计时规则使用不同的算法得出，用于排序
@@ -121,8 +123,9 @@ export class CountdownCardItem extends AbsCard {
 export class CountdownListCardItem extends AbsCard {
   title: string
   list: NamedDateItem[]
+  backgroundImgUri: string
 
-  constructor(title: string, list: NamedDateItem[]) {
+  constructor(title: string, list: NamedDateItem[], background?:string) {
     super(CardTypeEnum.CountdownList)
     this.title = title
     this.list = list
@@ -178,32 +181,50 @@ export enum CardTypeEnum {
   /**
    * 空卡片
    */
-  Empty,
+  Empty = 0,
   /**
    * 纪念日卡片
    */
-  Anniversary,
+  Anniversary = 1,
   /**
    * 纪念日列表卡片
    */
-  AnniversaryList,
+  AnniversaryList = 2,
   /**
    * 倒计时卡片
    */
-  Countdown,
+  Countdown = 3,
   /**
    * 倒计时列表卡片
    */
-  CountdownList,
+  CountdownList = 4,
   /**
    * 进度卡片
    * TODO: 还未进行
    */
-  Progress,
+  Progress = 5,
   /**
    * 代办列表卡片
    * TODO: 还未进行
    */
-  ToDoList,
+  ToDoList = 6,
+}
 
+export class CardResponse {
+  message?: string
+  total?: number
+  cards?: CardObject[]
+}
+
+export class CardObject {
+  sort?: number
+  type?: number
+  title?: string
+  date?: string
+  background?: string
+  list?: NamedDateItemObject[]
+}
+export class NamedDateItemObject {
+  name?: string
+  date?: string
 }

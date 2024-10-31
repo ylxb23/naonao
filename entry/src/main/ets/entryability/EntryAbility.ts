@@ -1,13 +1,10 @@
 import UIAbility from '@ohos.app.ability.UIAbility';
 import window from '@ohos.window';
-import distributedKVStore from '@ohos.data.distributedKVStore';
 import { Logger } from '../common/Logger';
-import { BUNDLE_NAME } from '../common/Constants'
 import relationalStore from '@ohos.data.relationalStore';
+import { http } from '@kit.NetworkKit';
 
 const logger: Logger = new Logger('EntryAbility')
-let kvManager: distributedKVStore.KVManager;
-let kvStore: distributedKVStore.SingleKVStore;
 export var sqlite: relationalStore.RdbStore;
 
 export default class EntryAbility extends UIAbility {
@@ -82,7 +79,30 @@ export default class EntryAbility extends UIAbility {
 
     // 获取当前顺序最大的条目
 
-
+    // http请求数据
+    let url = "http://192.168.43.167:8080/cards/nwx_001"
+    let httpRequest = http.createHttp()
+    let httpRequestOptions : http.HttpRequestOptions = {
+      method: http.RequestMethod.GET,
+      header: { 'Content-Type': 'application/json' },
+      readTimeout: 50000,
+      connectTimeout: 50000
+    }
+    httpRequest.on("dataReceive", function(data) {
+      AppStorage.setOrCreate("nwx_001-cards-pkg-size", data.byteLength)
+    })
+    httpRequest.requestInStream(url, httpRequestOptions)
+    httpRequest.request(url, httpRequestOptions, function (err: Error, data: http.HttpResponse) {
+      if(err != null) {
+        logger.error("请求卡片列表失败")
+      }
+      if(data.responseCode == http.ResponseCode.OK) {
+        logger.info("请求获取到卡片列表: %s", data.result)
+        AppStorage.setOrCreate("nwx_001-cards", data.result)
+      } else {
+        logger.warn("请求卡片列表失败, code: %s", data.responseCode)
+      }
+    })
   }
 
   onDestroy() {

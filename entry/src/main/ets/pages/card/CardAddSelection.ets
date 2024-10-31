@@ -1,6 +1,5 @@
 import router from '@ohos.router';
 import fs from '@ohos.file.fs';
-import hash from '@ohos.file.hash'
 import { Logger } from '../../common/Logger';
 import { AnniversaryCardEdit } from '../../view/card/AnniversaryCard';
 import {
@@ -10,7 +9,7 @@ import {
   CountdownCardItem,
   CountdownListCardItem,
 } from '../../viewmodel/card/Card';
-import { random, randomLower } from '../../common/Tool';
+import { randomLower } from '../../common/Tool';
 import { insertCardItem } from '../../common/DataUtil';
 
 
@@ -22,7 +21,7 @@ const logger: Logger = new Logger("CardAddSelection")
 @Entry
 @Component
 struct CardAddSelection {
-  @State fromCard: AbsCard | null = (router.getParams() as AbsCard);
+  @State fromCard: AbsCard = (router.getParams() as AbsCard);
   @State selectedCardTypeName: string = '';
 
   constructor() {
@@ -48,27 +47,12 @@ struct CardAddSelection {
         Image($r('app.media.accept2')).height(30).width(30).margin({ right: 16 }).onClick(() => {
           logger.debug("confirmed item info: %s", JSON.stringify(this.fromCard));
 
-          // let realCardItem;
-          // switch (this.fromCard.type) {
-          //   case CardTypeEnum.Empty:
-          //     realCardItem = this.fromCard as EmptyCardItem;
-          //   case CardTypeEnum.Anniversary:
-          //     realCardItem = this.fromCard as AnniversaryCardItem;
-          //   case CardTypeEnum.AnniversaryList:
-          //     realCardItem = this.fromCard as AnniversaryCardItem; // TODO
-          //   case CardTypeEnum.Countdown:
-          //     realCardItem = this.fromCard as CountdownCardItem;
-          //   case CardTypeEnum.CountdownList:
-          //     realCardItem = this.fromCard as CountdownListCardItem;
-          //   default:
-          //     break;
-          // }
           let dstUri = getContext().filesDir + "/cards";
           fs.access(dstUri, (exists) => {
             if (!exists) {
               fs.mkdir(dstUri);
             }
-            var realCardItem: AnniversaryCardItem = (this.fromCard as AnniversaryCardItem);
+            let realCardItem: AnniversaryCardItem = (this.fromCard as AnniversaryCardItem);
 
             dstUri += "/" + randomLower(32);
             logger.debug("目标文件路径将为: %s", dstUri);
@@ -94,8 +78,8 @@ struct CardAddSelection {
                         logger.info("实际保存的卡片信息为from: %s", JSON.stringify(this.fromCard))
                         logger.info("实际保存的卡片信息为real: %s", JSON.stringify(realCardItem))
                         insertCardItem(getContext(this), this.fromCard);
-                      }).catch((err) => {
-                      logger.warn("图片复制失败, message: %s, name: %d", err.message, err.code);
+                      }).catch(() => {
+                      logger.warn("图片复制失败.");
                     });
                   }
                 });
@@ -118,19 +102,20 @@ struct CardAddSelection {
         .borderRadius(3)
         .backgroundColor('#eee')
         .onClick(() => {
+          let rm = getContext(this).resourceManager
           TextPickerDialog.show({
             range: [
-              "空卡片", // 0
-              "纪念日卡片", // 1
-              "纪念日列表卡片", // 2
-              "倒计时卡片", // 3
-              "倒计时列表卡片", // 4
-              "进度卡片", // 5
-              "代办列表卡片", // 6
+            rm.getStringSync($r('app.string.Card_Type_Empty')), // 0
+            rm.getStringSync($r('app.string.Card_Type_Anniversary')), // 1
+            rm.getStringSync($r('app.string.Card_Type_AnniversaryList')), // 2
+            rm.getStringSync($r('app.string.Card_Type_Countdown')), // 3
+            rm.getStringSync($r('app.string.Card_Type_CountdownList')), // 4
+            rm.getStringSync($r('app.string.Card_Type_Progress')), // 5
+            rm.getStringSync($r('app.string.Card_Type_ToDoList')), // 6
             ],
-            value: this.selectedCardTypeName,
+            value: this.selectedCardTypeName == '' ? rm.getStringSync($r('app.string.Card_Type_Anniversary')) : this.selectedCardTypeName,
             onAccept: (v: TextPickerResult) => {
-              this.selectedCardTypeName = v.value
+              this.selectedCardTypeName = v.value.toString()
               logger.debug("选择的卡片类型是: %s, idx: %d", this.selectedCardTypeName, v.index)
             }
           })

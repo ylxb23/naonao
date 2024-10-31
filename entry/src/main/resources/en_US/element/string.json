@@ -71,6 +71,34 @@
     {
       "name": "Card_ChooseCardType",
       "value": "Choose Card Type"
+    },
+    {
+      "name": "Card_Type_Empty",
+      "value": "Empty Card"
+    },
+    {
+      "name": "Card_Type_Anniversary",
+      "value": "Anniversary Card"
+    },
+    {
+      "name": "Card_Type_AnniversaryList",
+      "value": "Anniversary List Card"
+    },
+    {
+      "name": "Card_Type_Countdown",
+      "value": "Countdown Card"
+    },
+    {
+      "name": "Card_Type_CountdownList",
+      "value": "Countdown List Card"
+    },
+    {
+      "name": "Card_Type_Progress",
+      "value": "Progress Card"
+    },
+    {
+      "name": "Card_Type_ToDoList",
+      "value": "ToDo List Card"
     }
   ]
 }

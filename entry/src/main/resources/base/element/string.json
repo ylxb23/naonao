@@ -71,6 +71,34 @@
     {
       "name": "Card_ChooseCardType",
       "value": "选择卡片类型"
+    },
+    {
+      "name": "Card_Type_Empty",
+      "value": "空卡片"
+    },
+    {
+      "name": "Card_Type_Anniversary",
+      "value": "纪念日卡片"
+    },
+    {
+      "name": "Card_Type_AnniversaryList",
+      "value": "纪念日列表卡片"
+    },
+    {
+      "name": "Card_Type_Countdown",
+      "value": "倒计时卡片"
+    },
+    {
+      "name": "Card_Type_CountdownList",
+      "value": "倒计时列表卡片"
+    },
+    {
+      "name": "Card_Type_Progress",
+      "value": "进度卡片"
+    },
+    {
+      "name": "Card_Type_ToDoList",
+      "value": "代办列表卡片"
     }
   ]
 }

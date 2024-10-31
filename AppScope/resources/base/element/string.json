@@ -3,6 +3,9 @@
     {
       "name": "app_name",
       "value": "闹闹"
+    }, {
+      "name": "app_description",
+      "value": "日常工具集合"
     }
   ]
 }
