@@ -46,7 +46,7 @@
     },
     {
       "name": "DaysPassed",
-      "value": "天了"
+      "value": "天"
     },
     {
       "name": "Card_AddCard",
@@ -99,6 +99,26 @@
     {
       "name": "Card_Type_Empty",
       "value": "空卡片"
+    },
+    {
+      "name": "Card_Input_PicCannotEmpty",
+      "value": "卡片的图片不可为空"
+    },
+    {
+      "name": "Warning",
+      "value": "警告"
+    },
+    {
+      "name": "Info",
+      "value": "提示"
+    },
+    {
+      "name": "Card_AddSuccess",
+      "value": "添加成功"
+    },
+    {
+      "name": "Card_AddFailed",
+      "value": "添加失败"
     }
   ]
 }

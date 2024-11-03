@@ -109,11 +109,13 @@ export class AnniversaryListCardItem extends AbsCard {
 export class CountdownCardItem extends AbsCard {
   title: string
   date: Date
+  backgroundImgUri: string
 
-  constructor(title: string, date: Date) {
-    super(CardTypeEnum.Anniversary)
-    this.title = title
-    this.date = date
+  constructor(t: string, d: Date, img?: string) {
+    super(CardTypeEnum.Countdown)
+    this.title = t
+    this.date = d
+    this.backgroundImgUri = img
   }
 }
 
@@ -129,6 +131,7 @@ export class CountdownListCardItem extends AbsCard {
     super(CardTypeEnum.CountdownList)
     this.title = title
     this.list = list
+    this.backgroundImgUri = background
   }
 }
 
@@ -210,10 +213,17 @@ export enum CardTypeEnum {
   ToDoList = 6,
 }
 
+
+export class CardRequest {
+  openid?: string
+  operation?: string
+  card?: CardObject
+}
 export class CardResponse {
   message?: string
   total?: number
   cards?: CardObject[]
+  success?: string
 }
 
 export class CardObject {
@@ -227,4 +237,5 @@ export class CardObject {
 export class NamedDateItemObject {
   name?: string
   date?: string
+  avatar?: string
 }

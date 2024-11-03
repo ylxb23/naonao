@@ -14,7 +14,11 @@ export struct CountdownCard {
   private info?: CountdownCardItem
 
   aboutToAppear() {
-    logger.info("get info: %s", JSON.stringify(this.info))
+    if(this.info == undefined) {
+      logger.error("卡片为空")
+      return
+    }
+    logger.debug("倒计时卡片内容为: %{public}s", JSON.stringify(this.info))
   }
 
   build() {

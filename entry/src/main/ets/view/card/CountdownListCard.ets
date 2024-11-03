@@ -45,7 +45,7 @@ export struct CountdownListCard {
     Row() {
       // 左边展示最近一个倒计时内容，和标题
       Column() {
-        this.TopItemDetail(info.title, getNextAnniversaryDayCountdownItem(this.info))
+        this.TopItemDetail(info.title, getNextAnniversaryDayCountdownItem(info))
       }
       .width(DISPLAY_BIG_LEFT_INFO_WIDTH)
       .height(DISPLAY_BIG_LEFT_INFO_HEIGHT)

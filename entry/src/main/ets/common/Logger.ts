@@ -5,7 +5,7 @@ export class Logger {
   private tag: string
 
   constructor(tag: string) {
-    this.tag = "自定义日志[" + tag + "]"
+    this.tag = tag
     this.domain = 0x0000
   }
 

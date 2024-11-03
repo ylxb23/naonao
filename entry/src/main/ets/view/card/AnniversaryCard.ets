@@ -1,11 +1,8 @@
-import picker from '@ohos.file.picker'
-import image from '@ohos.multimedia.image'
-import fs from '@ohos.file.fs'
 import { CARD_FRONT_FONT_OPACITY } from '../../common/Constants'
 import { Logger } from '../../common/Logger'
-import { AnniversaryCardItem, DISPLAY_MIDDLE_HEIGHT, DISPLAY_MIDDLE_WIDTH } from '../../viewmodel/card/Card'
+import { AnniversaryCardItem, CardObject, DISPLAY_MIDDLE_HEIGHT, DISPLAY_MIDDLE_WIDTH } from '../../viewmodel/card/Card'
 import { daysPassedOfDate, formatDate } from '../../common/DateUtil'
-import router from '@ohos.router'
+import { photoPickOne } from '../../common/PickerUtil'
 
 const logger: Logger = new Logger("AnniversaryCard")
 
@@ -14,18 +11,14 @@ const logger: Logger = new Logger("AnniversaryCard")
 })
 @Component
 export struct AnniversaryCardEdit {
-  @Link cardItem: AnniversaryCardItem
-  @State title: string = ''
-  @State date: string = formatDate(new Date('2023-08-02T04:03:00'))
-  @State imagePixMap: image.PixelMap | Resource = $r('app.media.camerax')
+  @Link cardObject: CardObject
 
   constructor() {
     super()
-    this.cardItem = (router.getParams() as AnniversaryCardItem);
   }
 
   aboutToAppear() {
-    logger.debug("get from card item: %s", JSON.stringify(this.cardItem))
+    logger.debug("get from card item: %s", JSON.stringify(this.cardObject))
   }
 
   build() {
@@ -36,7 +29,7 @@ export struct AnniversaryCardEdit {
 
   @Builder AnniversaryEdit() {
     Column() {
-      Image(this.imagePixMap)
+      Image(this.cardObject.background == undefined ? $r('app.media.camerax') : this.cardObject.background)
         .zIndex(-1)
         .position({ x: 0, y: 0 })
         .height('100%')
@@ -45,7 +38,7 @@ export struct AnniversaryCardEdit {
         .borderRadius(10)
         .objectFit(ImageFit.Cover)
 
-      TextInput({ text: this.title, placeholder: $r('app.string.Card_InputName') })
+      TextInput({ text: this.cardObject.title, placeholder: $r('app.string.Card_InputName') })
         .width('100%')
         .height(30)
         .textAlign(TextAlign.Center)
@@ -58,40 +51,21 @@ export struct AnniversaryCardEdit {
         .opacity(CARD_FRONT_FONT_OPACITY)
         .borderRadius({ topLeft: 10, topRight: 10, bottomLeft: 0, bottomRight: 0 })
         .onChange((v) => {
-          this.title = v
-          this.cardItem.title = this.title
+          this.cardObject.title = v
         })
       Blank()
-        .onClick(async (_e) => {
+        .onClick(() => {
           logger.debug("打开图片选择器...");
-          let options: picker.PhotoSelectOptions = new picker.PhotoSelectOptions()
-          options.MIMEType = picker.PhotoViewMIMETypes.IMAGE_TYPE
-          options.maxSelectNumber = 1
-          let photoPicker = new picker.PhotoViewPicker()
-          await photoPicker.select(options).then((result: picker.PhotoSelectResult) => {
-            logger.debug("photoPickOne, pick result: %s", JSON.stringify(result));
-            let selected = result.photoUris.length > 0 ? result.photoUris[0] : '';
-            this.cardItem.backgroundImgUri = selected;
-            fs.open(selected, fs.OpenMode.READ_ONLY, (err: Error, file: fs.File) => {
-              if (err) {
-                logger.error("打开选择的图片失败, err: %s, %s", err.name, err.message)
-              } else {
-                let imageSource: image.ImageSource = image.createImageSource(file.fd);
-                logger.debug("create image source from url: %s", imageSource);
-                let imagePix: Promise<PixelMap> = imageSource.createPixelMap()
-                imagePix.then((value: image.PixelMap) => {
-                  this.imagePixMap = value
-                  logger.info("get image pixel map: ", this.imagePixMap.getPixelBytesNumber())
-                });
-                fs.close(file);
-              }
-            });
-          }).catch(() => {
+          let picked: Promise<string> = photoPickOne()
+          picked.then((res) => {
+            logger.info("选择的图片为: %{public}s", res)
+            this.cardObject.background = res
+          }).catch( () => {
             logger.error("pick one photo err")
           })
         })
 
-      Text(this.date)
+      Text(this.cardObject.date)
         .width('100%')
         .height(30)
         .lineHeight(30)
@@ -105,13 +79,12 @@ export struct AnniversaryCardEdit {
           DatePickerDialog.show({
             start: new Date('1970-1-1'),
             end: new Date('2100-1-1'),
-            selected: new Date(this.date),
+            selected: new Date(),
             onAccept: (value: DatePickerResult) => {
               let selected = new Date();
               selected.setFullYear(value.year, value.month, value.day)
-              this.date = formatDate(selected);
-              this.cardItem.date = selected
-              console.info('select current date is: ' + JSON.stringify(value))
+              this.cardObject.date = formatDate(selected)
+              console.info('select current date is: ' + JSON.stringify(this.cardObject.date))
             }
           })
         })
@@ -137,18 +110,7 @@ export struct AnniversaryCard {
       logger.error("卡片为空")
       return
     }
-    logger.debug("卡片内容为: %s", JSON.stringify(this.info))
-    if (this.info.backgroundImgUri === undefined) {
-      logger.debug("卡片内容中的 backgroundImgUri 未定义")
-    } else if (this.info.backgroundImgUri === null) {
-      logger.debug("卡片内容中的 backgroundImgUri 为null")
-    } else if (this.info.backgroundImgUri == '') {
-      logger.debug("卡片内容中的 backgroundImgUri 为空")
-    } else {
-      if (!fs.accessSync(this.info.backgroundImgUri)) {
-        logger.warn("图片文件不存在: %s", this.info.backgroundImgUri);
-      }
-    }
+    logger.debug("纪念日卡片内容为: %s", JSON.stringify(this.info))
   }
 
   build() {
@@ -223,7 +185,7 @@ export struct AnniversaryCard {
     .borderRadius(10)
     .priorityGesture(LongPressGesture({ repeat: false }).onAction((_e) => {
       // 长按事件动作
-      // TODO: 将当前显示对象替换成编辑模式
+      // TODO: 跳转到编辑页面
     }).onActionEnd((_e) => {
       // TODO: 更新当前卡片内容
     }), GestureMask.Normal)

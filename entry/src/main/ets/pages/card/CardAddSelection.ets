@@ -1,16 +1,12 @@
 import router from '@ohos.router';
-import fs from '@ohos.file.fs';
+
 import { Logger } from '../../common/Logger';
 import { AnniversaryCardEdit } from '../../view/card/AnniversaryCard';
 import {
-  AbsCard,
-  AnniversaryCardItem,
+  CardObject,
   CardTypeEnum,
-  CountdownCardItem,
-  CountdownListCardItem,
 } from '../../viewmodel/card/Card';
-import { randomLower } from '../../common/Tool';
-import { insertCardItem } from '../../common/DataUtil';
+import { addCardRequest, uploadFileRequest } from '../../common/HttpUtil';
 
 
 const logger: Logger = new Logger("CardAddSelection")
@@ -21,19 +17,18 @@ const logger: Logger = new Logger("CardAddSelection")
 @Entry
 @Component
 struct CardAddSelection {
-  @State fromCard: AbsCard = (router.getParams() as AbsCard);
-  @State selectedCardTypeName: string = '';
+  @State cardObject: CardObject = {} as CardObject
+  @State selectedCardTypeName: string = ""
 
   constructor() {
     super()
-    this.fromCard = (router.getParams() as AbsCard);
-    logger.debug("fromCard get form router params is: %s", JSON.stringify(this.fromCard))
+    logger.debug("fromCard get form router params is: %s", JSON.stringify(this.cardObject))
   }
 
   aboutToAppear() {
-    if (this.fromCard.type == CardTypeEnum.Empty) {
-      this.fromCard = new AnniversaryCardItem('', new Date())
-    }
+    // init
+    this.selectedCardTypeName = getContext(this).resourceManager.getStringSync($r('app.string.Card_Type_Anniversary'));
+    this.cardObject.type = CardTypeEnum.Anniversary.valueOf()
   }
 
   build() {
@@ -44,50 +39,33 @@ struct CardAddSelection {
           router.back()
         })
         Blank()
+        Text($r('app.string.Card_AddCard')).height(30).width(100)
+        Blank()
         Image($r('app.media.accept2')).height(30).width(30).margin({ right: 16 }).onClick(() => {
-          logger.debug("confirmed item info: %s", JSON.stringify(this.fromCard));
-
-          let dstUri = getContext().filesDir + "/cards";
-          fs.access(dstUri, (exists) => {
-            if (!exists) {
-              fs.mkdir(dstUri);
-            }
-            let realCardItem: AnniversaryCardItem = (this.fromCard as AnniversaryCardItem);
-
-            dstUri += "/" + randomLower(32);
-            logger.debug("目标文件路径将为: %s", dstUri);
-            fs.open(realCardItem.backgroundImgUri, fs.OpenMode.READ_ONLY, (err, srcFile: fs.File) => {
-              if (err) {
-                logger.error("打开源文件失败, message: %s, code: %d", err.message, err.name);
+          logger.info("保存的卡片信息为: %{public}s", JSON.stringify(this.cardObject))
+          // upload image
+          let uploaded: Promise<string> = uploadFileRequest(this.cardObject.background, getContext())
+          uploaded.then((uri) => {
+            logger.info("上传图片[%{public}s]结果: [%{public}s]", this.cardObject.background, uploaded)
+            this.cardObject.background = uri
+            // add card item
+            let added: Promise<boolean> = addCardRequest(this.cardObject)
+            logger.info("实际保存的卡片信息为: %{public}s", JSON.stringify(this.cardObject))
+            added.then( (yes) => {
+              if(yes) {
+                AlertDialog.show({
+                  title: $r('app.string.Info'),
+                  message: $r('app.string.Card_AddSuccess')
+                })
+                router.back()
               } else {
-                logger.info("打开源文件: %s, fd: %d", realCardItem.backgroundImgUri, srcFile.fd);
-                fs.open(dstUri, fs.OpenMode.READ_WRITE | fs.OpenMode.CREATE, (err, dstFile: fs.File) => {
-                  if (err) {
-                    logger.error("创建本地文件失败, message: %s, name: %d", err.message, err.name);
-                  } else {
-                    logger.info("打开目标文件: %s, fd: %d", dstUri, dstFile.fd);
-                    fs.copyFile(srcFile.fd, dstFile.fd, 0)
-                      .then(() => {
-                        logger.debug("文件复制成功, dstFile fd: %d", dstFile.fd);
-                        realCardItem.backgroundImgUri = dstUri;
-                        logger.info("文件复制成功, 目标文件路径: %s", realCardItem.backgroundImgUri);
-
-                        fs.close(dstFile);
-                        fs.close(srcFile);
-
-                        logger.info("实际保存的卡片信息为from: %s", JSON.stringify(this.fromCard))
-                        logger.info("实际保存的卡片信息为real: %s", JSON.stringify(realCardItem))
-                        insertCardItem(getContext(this), this.fromCard);
-                      }).catch(() => {
-                      logger.warn("图片复制失败.");
-                    });
-                  }
-                });
+                AlertDialog.show({
+                  title: $r('app.string.Warning'),
+                  message: $r('app.string.Card_AddFailed')
+                })
               }
-            });
-          });
-
-          logger.info("保存的卡片信息为: %s", JSON.stringify(this.fromCard))
+            })
+          })
         })
       }.height(50).width('100%').margin({ top: 10 })
 
@@ -97,6 +75,7 @@ struct CardAddSelection {
         .lineHeight(40)
         .width('100%')
         .fontWeight(FontWeight.Medium)
+        .fontSize(23)
         .fontColor(Color.Grey)
         .textAlign(TextAlign.Center)
         .borderRadius(3)
@@ -113,27 +92,59 @@ struct CardAddSelection {
             rm.getStringSync($r('app.string.Card_Type_Progress')), // 5
             rm.getStringSync($r('app.string.Card_Type_ToDoList')), // 6
             ],
-            value: this.selectedCardTypeName == '' ? rm.getStringSync($r('app.string.Card_Type_Anniversary')) : this.selectedCardTypeName,
+            value: this.selectedCardTypeName,
             onAccept: (v: TextPickerResult) => {
               this.selectedCardTypeName = v.value.toString()
-              logger.debug("选择的卡片类型是: %s, idx: %d", this.selectedCardTypeName, v.index)
+              logger.debug("选择的卡片类型是: %{public}s, idx: %{public}d", this.selectedCardTypeName, v.index)
+              switch (this.selectedCardTypeName) {
+                case rm.getStringSync($r('app.string.Card_Type_Empty')):
+                  this.cardObject.type = CardTypeEnum.Empty.valueOf()
+                  break
+                case rm.getStringSync($r('app.string.Card_Type_Anniversary')):
+                  this.cardObject.type = CardTypeEnum.Anniversary.valueOf()
+                  break
+                case rm.getStringSync($r('app.string.Card_Type_AnniversaryList')):
+                  this.cardObject.type = CardTypeEnum.AnniversaryList.valueOf()
+                  break
+                case rm.getStringSync($r('app.string.Card_Type_Countdown')):
+                  this.cardObject.type = CardTypeEnum.Countdown.valueOf()
+                  break
+                case rm.getStringSync($r('app.string.Card_Type_CountdownList')):
+                  this.cardObject.type = CardTypeEnum.CountdownList.valueOf()
+                  break
+                case rm.getStringSync($r('app.string.Card_Type_Progress')):
+                  this.cardObject.type = CardTypeEnum.Progress.valueOf()
+                  break
+                case rm.getStringSync($r('app.string.Card_Type_ToDoList')):
+                  this.cardObject.type = CardTypeEnum.ToDoList.valueOf()
+                  break
+              }
             }
           })
         })
 
       Flex({ justifyContent: FlexAlign.Center }) {
-        if (this.fromCard instanceof AnniversaryCardItem) {
-          AnniversaryCardEdit({ cardItem: $fromCard }).width(150).height(150)
+        // todo: 选择不同卡片
+        if (this.cardObject.type == CardTypeEnum.Anniversary.valueOf()) {
+          AnniversaryCardEdit({ cardObject: this.cardObject }).width(150).height(150)
             .margin(10)
-        } else if (this.fromCard instanceof CountdownCardItem) {
+        } else if (this.cardObject.type == CardTypeEnum.AnniversaryList.valueOf()) {
 
-        } else if (this.fromCard instanceof CountdownListCardItem) {
+        } else if (this.cardObject.type == CardTypeEnum.Countdown.valueOf()) {
 
         } else {
-          AnniversaryCardEdit({ cardItem: $fromCard }).width(150).height(150)
+          AnniversaryCardEdit({ cardObject: this.cardObject }).width(150).height(150)
             .margin(10)
         }
       }.margin({ top: 30 })
+
+      Text(this.selectedCardTypeName)
+        .height(40)
+        .lineHeight(40)
+        .width('100%')
+        .fontWeight(FontWeight.Medium)
+        .fontColor(Color.Grey)
+        .textAlign(TextAlign.Center)
     }.width('100%').height('100%')
   }
 }

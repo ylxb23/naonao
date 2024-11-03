@@ -46,7 +46,7 @@
     },
     {
       "name": "DaysPassed",
-      "value": "days passed"
+      "value": "days"
     },
     {
       "name": "Card_AddCard",
@@ -99,6 +99,26 @@
     {
       "name": "Card_Type_ToDoList",
       "value": "ToDo List Card"
+    },
+    {
+      "name": "Card_Input_PicCannotEmpty",
+      "value": "Card Image Can Not Be Empty"
+    },
+    {
+      "name": "Warning",
+      "value": "Warning"
+    },
+    {
+      "name": "Info",
+      "value": "Info"
+    },
+    {
+      "name": "Card_AddSuccess",
+      "value": "Add Succeeded"
+    },
+    {
+      "name": "Card_AddFailed",
+      "value": "Add Failed"
     }
   ]
 }

@@ -1,12 +1,8 @@
 import picker from '@ohos.file.picker';
-import { AbsCard } from '../viewmodel/card/Card';
 import { Logger } from './Logger';
 
 const logger: Logger = new Logger('PickerUtil')
 
-export async function pickupOneImageForCardItem(item: AbsCard) {
-  let res: Promise<string> = photoPickOne()
-}
 
 /**
  * 从相册中获取一张图片，返回图片路径
@@ -19,11 +15,11 @@ export async function photoPickOne(): Promise<string> {
   let photoPicker = new picker.PhotoViewPicker()
   let picked: string
   await photoPicker.select(options).then((result: picker.PhotoSelectResult) => {
-    logger.debug("photoPickOne, pick result: %s", JSON.stringify(result))
+    logger.debug("photoPickOne, pick result: %{public}s", JSON.stringify(result))
     picked = result.photoUris.length > 0 ? result.photoUris[0] : ''
   }).catch((err) => {
-    logger.error("pick one photo err: %s", err)
+    logger.error("pick one photo err: %{public}s", err)
   })
-  logger.info("pick one photo result: %s", picked)
+  logger.info("pick one photo result: %{public}s", picked)
   return picked
 }
