@@ -119,6 +119,18 @@
     {
       "name": "Card_AddFailed",
       "value": "添加失败"
+    },
+    {
+      "name": "Card_DeleteCard",
+      "value": "删除卡片"
+    },
+    {
+      "name": "Card_UpdateCard",
+      "value": "更新卡片"
+    },
+    {
+      "name": "Card_DeleteSuccess",
+      "value": "删除成功"
     }
   ]
 }

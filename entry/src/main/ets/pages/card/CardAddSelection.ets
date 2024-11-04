@@ -2,11 +2,11 @@ import router from '@ohos.router';
 
 import { Logger } from '../../common/Logger';
 import { AnniversaryCardEdit } from '../../view/card/AnniversaryCard';
-import {
-  CardObject,
+import { AbsCard, CardObject,
   CardTypeEnum,
 } from '../../viewmodel/card/Card';
 import { addCardRequest, uploadFileRequest } from '../../common/HttpUtil';
+import { CountdownCardEdit } from '../../view/card/CountdownCard';
 
 
 const logger: Logger = new Logger("CardAddSelection")
@@ -17,12 +17,14 @@ const logger: Logger = new Logger("CardAddSelection")
 @Entry
 @Component
 struct CardAddSelection {
+  private card?: AbsCard
   @State cardObject: CardObject = {} as CardObject
   @State selectedCardTypeName: string = ""
 
   constructor() {
     super()
     logger.debug("fromCard get form router params is: %s", JSON.stringify(this.cardObject))
+    this.card = router.getParams() as AbsCard
   }
 
   aboutToAppear() {
@@ -124,19 +126,13 @@ struct CardAddSelection {
         })
 
       Flex({ justifyContent: FlexAlign.Center }) {
-        // todo: 选择不同卡片
-        if (this.cardObject.type == CardTypeEnum.Anniversary.valueOf()) {
-          AnniversaryCardEdit({ cardObject: this.cardObject }).width(150).height(150)
-            .margin(10)
-        } else if (this.cardObject.type == CardTypeEnum.AnniversaryList.valueOf()) {
 
-        } else if (this.cardObject.type == CardTypeEnum.Countdown.valueOf()) {
+        AnniversaryCardEdit({ cardObject: this.cardObject }).width(150).height(150)
+          .margin(10).visibility(this.cardObject.type == CardTypeEnum.Anniversary.valueOf() ? Visibility.Visible : Visibility.None)
+        CountdownCardEdit({ cardObject: this.cardObject }).width(150).height(150)
+          .margin(10).visibility(this.cardObject.type == CardTypeEnum.Countdown.valueOf() ? Visibility.Visible : Visibility.None)
 
-        } else {
-          AnniversaryCardEdit({ cardObject: this.cardObject }).width(150).height(150)
-            .margin(10)
-        }
-      }.margin({ top: 30 })
+      }.margin({ top: 30 }).id("editPanel")
 
       Text(this.selectedCardTypeName)
         .height(40)

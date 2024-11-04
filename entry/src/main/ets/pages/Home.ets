@@ -33,14 +33,12 @@ export struct Home {
     logger.debug("从本地存储中获得卡片信息: %{public}s", stored)
     if(stored == undefined) {
       logger.info("从本地存储中获取到卡片列表为空...")
-      this.cards.push(new EmptyCardItem())
       return
     }
     let res: CardResponse = JSON.parse(stored)
     let cards = res.cards
     if(cards == undefined || cards.length == 0) {
       logger.info("从本地存储中获取到卡片列表为空...")
-      this.cards.push(new EmptyCardItem())
       return
     }
     for (let index = 0; index < cards.length; index++) {
@@ -72,12 +70,14 @@ export struct Home {
             logger.warn("未知卡片类型: %d", element.type)
       }
     }
-    this.cards.push(new EmptyCardItem())
   }
 
   aboutToAppear() {
     this.getCardsFromStorage()
     logger.debug("获取到卡片列表: %s", JSON.stringify(this.cards))
+    if(this.cards.length == 0) {
+      this.cards.push(new EmptyCardItem())
+    }
   }
 
   build() {

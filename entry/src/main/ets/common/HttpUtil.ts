@@ -124,3 +124,38 @@ export async function addCardRequest(card: CardObject): Promise<boolean> {
   })
   return result
 }
+
+/**
+ * 删除卡片
+ * @param card
+ * @returns
+ */
+export async function deleteCardRequest(card: CardObject): Promise<boolean> {
+  let request: CardRequest = {
+    openid: UID,
+    operation: "delete",
+    card: card
+  }
+  let url: string = REMOTE_HOST + "/card"
+  let httpRequest = http.createHttp()
+  let httpRequestOptions : http.HttpRequestOptions = {
+    method: http.RequestMethod.POST,
+    header: { 'Content-Type': 'application/json' },
+    readTimeout: 50000,
+    connectTimeout: 50000,
+    extraData: JSON.stringify(request)
+  }
+  let result: boolean = false
+  let response: Promise<http.HttpResponse> = httpRequest.request(url, httpRequestOptions)
+  await response.then((data: http.HttpResponse) => {
+    logger.info("删除卡片[%{public}s]成功: %{public}s", JSON.stringify(card), data.result)
+    result = true
+    httpRequest.destroy();
+  }).catch( () => {
+    logger.error("删除卡片异常: %{public}s", JSON.stringify(card))
+    httpRequest.off('headersReceive');
+    httpRequest.destroy();
+    return
+  })
+  return result
+}

@@ -119,6 +119,22 @@
     {
       "name": "Card_AddFailed",
       "value": "Add Failed"
+    },
+    {
+      "name": "Card_DeleteCard",
+      "value": "Delete Card"
+    },
+    {
+      "name": "Card_UpdateCard",
+      "value": "Update Card"
+    },
+    {
+      "name": "Card_DeleteSuccess",
+      "value": "Delete Success"
+    },
+    {
+      "name": "Card_DeleteFailed",
+      "value": "Delete Failed"
     }
   ]
 }
