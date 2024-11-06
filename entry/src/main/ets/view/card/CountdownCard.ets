@@ -6,7 +6,6 @@ import { photoPickOne } from '../../common/PickerUtil'
 import { router } from '@kit.ArkUI'
 import { deleteCardRequest } from '../../common/HttpUtil'
 
-
 const logger: Logger = new Logger("Countdown")
 
 @Preview({
@@ -105,7 +104,8 @@ export struct CountdownCard {
           type: this.info?.type?.valueOf(),
           title: this.info?.title,
           date: formatDate(this.info?.date),
-          background: this.info?.backgroundImgUri
+          background: this.info?.backgroundImgUri,
+          debug: 0
         }
         let yes: Promise<boolean> = deleteCardRequest(cardObject)
         yes.then((y) => {
@@ -183,7 +183,7 @@ export struct CountdownCardEdit {
           })
         })
 
-      Text(this.cardObject.date)
+      Text(this.cardObject.date == undefined ? formatDate(new Date()) : this.cardObject.date)
         .width('100%')
         .height(30)
         .lineHeight(30)

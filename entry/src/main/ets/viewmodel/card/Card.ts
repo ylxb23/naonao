@@ -233,6 +233,7 @@ export class CardObject {
   date?: string
   background?: string
   list?: NamedDateItemObject[]
+  debug: number = 0 // 解决class类型mvvm属性内的属性变更导致的同步不及时问题，使最上层属性得到变更即可出发view的变更
 }
 export class NamedDateItemObject {
   name?: string

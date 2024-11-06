@@ -56,8 +56,10 @@
         "label": "$string:EntryAbility_label",
         "startWindowIcon": "$media:icon",
         "startWindowBackground": "$color:start_window_background",
-        "exported": true,
-        "launchType": "multiton", // singleton,multiton,specified
+        "exported": true, // 是否可被其他应用调用
+        "launchType": "singleton", // singleton,multiton,specified
+        "backgroundModes": ["dataTransfer", "location"],
+        "orientation": "auto_rotation",
         "skills": [
           {
             "entities": [

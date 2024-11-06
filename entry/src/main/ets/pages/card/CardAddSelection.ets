@@ -2,11 +2,12 @@ import router from '@ohos.router';
 
 import { Logger } from '../../common/Logger';
 import { AnniversaryCardEdit } from '../../view/card/AnniversaryCard';
-import { AbsCard, CardObject,
-  CardTypeEnum,
+import { AbsCard, CardObject, CardResponse, CardTypeEnum,
 } from '../../viewmodel/card/Card';
-import { addCardRequest, uploadFileRequest } from '../../common/HttpUtil';
+import { addCardRequest, doAddCardRequest, uploadFileRequest } from '../../common/HttpUtil';
 import { CountdownCardEdit } from '../../view/card/CountdownCard';
+import { CountdownListCardEdit } from '../../view/card/CountdownListCard';
+import { CommonHttpResponse } from '../../common/Common';
 
 
 const logger: Logger = new Logger("CardAddSelection")
@@ -29,8 +30,9 @@ struct CardAddSelection {
 
   aboutToAppear() {
     // init
-    this.selectedCardTypeName = getContext(this).resourceManager.getStringSync($r('app.string.Card_Type_Anniversary'));
-    this.cardObject.type = CardTypeEnum.Anniversary.valueOf()
+    this.selectedCardTypeName = getContext(this).resourceManager.getStringSync($r('app.string.Card_Type_CountdownList'));
+    this.cardObject.type = CardTypeEnum.CountdownList.valueOf()
+    this.cardObject.sort = 1
   }
 
   build() {
@@ -45,28 +47,23 @@ struct CardAddSelection {
         Blank()
         Image($r('app.media.accept2')).height(30).width(30).margin({ right: 16 }).onClick(() => {
           logger.info("保存的卡片信息为: %{public}s", JSON.stringify(this.cardObject))
-          // upload image
-          let uploaded: Promise<string> = uploadFileRequest(this.cardObject.background, getContext())
-          uploaded.then((uri) => {
-            logger.info("上传图片[%{public}s]结果: [%{public}s]", this.cardObject.background, uploaded)
-            this.cardObject.background = uri
-            // add card item
-            let added: Promise<boolean> = addCardRequest(this.cardObject)
+          let addResult: Promise<CommonHttpResponse> = doAddCardRequest(this.cardObject, getContext())
+          addResult.then((res) => {
             logger.info("实际保存的卡片信息为: %{public}s", JSON.stringify(this.cardObject))
-            added.then( (yes) => {
-              if(yes) {
-                AlertDialog.show({
-                  title: $r('app.string.Info'),
-                  message: $r('app.string.Card_AddSuccess')
-                })
-                router.back()
-              } else {
-                AlertDialog.show({
-                  title: $r('app.string.Warning'),
-                  message: $r('app.string.Card_AddFailed')
-                })
-              }
-            })
+            if(res.status == 200) {
+              router.back({url: "/pages/Home", params: {refresh: true}})
+              // 保存卡片内容到Storage
+              AlertDialog.show({
+                title: $r('app.string.Info'),
+                message: $r('app.string.Card_AddSuccess')
+              })
+            } else {
+              AlertDialog.show({
+                title: $r('app.string.Warning'),
+                subtitle: $r('app.string.Card_AddFailed'),
+                message: res.message
+              })
+            }
           })
         })
       }.height(50).width('100%').margin({ top: 10 })
@@ -131,13 +128,16 @@ struct CardAddSelection {
           .margin(10).visibility(this.cardObject.type == CardTypeEnum.Anniversary.valueOf() ? Visibility.Visible : Visibility.None)
         CountdownCardEdit({ cardObject: this.cardObject }).width(150).height(150)
           .margin(10).visibility(this.cardObject.type == CardTypeEnum.Countdown.valueOf() ? Visibility.Visible : Visibility.None)
+        CountdownListCardEdit({ cardObject: this.cardObject }).width(300).height(150)
+          .margin(10).visibility(this.cardObject.type == CardTypeEnum.CountdownList.valueOf() ? Visibility.Visible : Visibility.None)
 
       }.margin({ top: 30 }).id("editPanel")
 
-      Text(this.selectedCardTypeName)
+      TextInput({text: this.cardObject.sort + "", placeholder: $r('app.string.Card_InputSort')})
         .height(40)
         .lineHeight(40)
         .width('100%')
+        .type(InputType.Number)
         .fontWeight(FontWeight.Medium)
         .fontColor(Color.Grey)
         .textAlign(TextAlign.Center)

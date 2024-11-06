@@ -73,11 +73,30 @@ export struct Home {
   }
 
   aboutToAppear() {
+    logger.debug("aboutToAppear")
     this.getCardsFromStorage()
     logger.debug("获取到卡片列表: %s", JSON.stringify(this.cards))
     if(this.cards.length == 0) {
       this.cards.push(new EmptyCardItem())
     }
+  }
+
+  aboutToRecycle(): void {
+    logger.debug("aboutToRecycle")
+  }
+
+  aboutToReuse(): void {
+    logger.debug("aboutToRecycle")
+  }
+
+  aboutToDisappear(): void {
+    logger.debug("aboutToDisappear")
+  }
+  onPageShow(): void {
+    logger.debug("onPageShow")
+  }
+  onPageHide(): void {
+    logger.debug("onPageHide")
   }
 
   build() {

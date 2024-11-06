@@ -131,6 +131,14 @@
     {
       "name": "Card_DeleteSuccess",
       "value": "删除成功"
+    },
+    {
+      "name": "Card_InputSort",
+      "value": "输入排序序号(越小越靠前)"
+    },
+    {
+      "name": "Card_DeleteFailed",
+      "value": "删除失败"
     }
   ]
 }

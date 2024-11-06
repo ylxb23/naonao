@@ -135,6 +135,10 @@
     {
       "name": "Card_DeleteFailed",
       "value": "Delete Failed"
+    },
+    {
+      "name": "Card_InputSort",
+      "value": "Input Sort(min first)"
     }
   ]
 }
