@@ -1,10 +1,11 @@
-import { CARD_FRONT_FONT_OPACITY } from '../../common/Constants';
+import { CARD_FRONT_FONT_OPACITY, OperationType_Add, OperationType_Update } from '../../common/Constants';
 import { formatDate, nextAnniversaryDays } from '../../common/DateUtil';
 import { deleteCardRequest } from '../../common/HttpUtil';
 import { Logger } from '../../common/Logger';
 import { photoPickOne } from '../../common/PickerUtil';
 import {
   CardObject,
+  CardRouterParam,
   CountdownListCardItem,
   DISPLAY_BIG_HEIGHT,
   DISPLAY_BIG_LEFT_INFO_HEIGHT,
@@ -18,6 +19,7 @@ import {
   NamedDateItemObject
 } from '../../viewmodel/card/Card'
 import { router } from '@kit.ArkUI';
+import { CommonHttpResponse } from '../../common/Common';
 
 
 const logger: Logger = new Logger("Home")
@@ -96,7 +98,6 @@ export struct CountdownListCard {
       .height(DISPLAY_BIG_RIGHT_LIST_HEIGHT)
       .margin({ top: 10, bottom: 10 })
       .borderRadius(6)
-      // .backgroundColor('#777')
       .opacity(CARD_FRONT_FONT_OPACITY)
 
     }.width(DISPLAY_BIG_WIDTH).height(DISPLAY_BIG_HEIGHT)
@@ -200,21 +201,21 @@ export struct CountdownListCard {
   @Builder
   PopMenu (){
     Menu() {
-      MenuItem({content: $r('app.string.Card_AddCard'), endIcon: $r('app.media.addp2')}).onClick((event) => {
-        router.pushUrl({url: "pages/card/CardAddSelection", params: this.info})
+      MenuItem({content: $r('app.string.Card_AddCard'), endIcon: $r('app.media.addp2')}).onClick(() => {
+        router.pushUrl({url: "pages/card/CardAddSelection", params: {card: this.info, operation: OperationType_Add} as CardRouterParam})
       })
-      MenuItem({content: $r('app.string.Card_UpdateCard'), endIcon: $r('app.media.accept2')}).onClick((event) => {
-        router.pushUrl({url: "pages/card/CardAddSelection", params: this.info})
+      MenuItem({content: $r('app.string.Card_UpdateCard'), endIcon: $r('app.media.accept2')}).onClick(() => {
+        router.pushUrl({url: "pages/card/CardAddSelection", params: {card: this.info, operation: OperationType_Update} as CardRouterParam})
       })
-      MenuItem({content: $r('app.string.Card_DeleteCard'), endIcon: $r('app.media.reject2')}).onClick((event) => {
+      MenuItem({content: $r('app.string.Card_DeleteCard'), endIcon: $r('app.media.reject2')}).onClick(() => {
         let cardObject: CardObject = {
           type: this.info?.type?.valueOf(),
           title: this.info?.title,
           debug: 0
         }
-        let yes: Promise<boolean> = deleteCardRequest(cardObject)
-        yes.then((y) => {
-          if(y) {
+        let commonResP: Promise<CommonHttpResponse> = deleteCardRequest(cardObject)
+        commonResP.then((commonRes) => {
+          if(commonRes.status == 200) {
             AlertDialog.show({
               title: $r('app.string.Info'),
               message: $r('app.string.Card_DeleteSuccess')
@@ -245,11 +246,15 @@ export struct CountdownListCardEdit {
 
   aboutToAppear() {
     logger.info("倒计时列表卡片: %{public}s", JSON.stringify(this.cardObject))
-    if(this.cardObject.list == undefined || this.cardObject.list.length == 0) {
-      let list: NamedDateItemObject[] = []
-      list.push({date: formatDate(new Date())})
-      this.cardObject.list = list
-      logger.info("初始化第一个Item")
+    if(this.cardObject.list == undefined) {
+      logger.warn("卡片信息不应该为 undefined")
+      this.cardObject.list = []
+    }
+    if(this.cardObject.list.length == 0) {
+      this.cardObject.list.push({idx: 0, date: formatDate(new Date())})
+    }
+    for(let i=0;i<this.cardObject.list.length; i++) {
+      this.cardObject.list[i].idx = i
     }
   }
 
@@ -323,6 +328,7 @@ export struct CountdownListCardEdit {
         TextInput({ text: this.cardObject.title, placeholder: $r('app.string.Card_InputTitle') })
           .width('100%')
           .height(30)
+          .enabled(this.cardObject.operation != OperationType_Update)
           .textAlign(TextAlign.Center)
           .fontSize(13)
           .fontColor(Color.White)
@@ -440,20 +446,25 @@ export struct CountdownListCardEdit {
             .objectFit(ImageFit.Cover)
             .align(Alignment.Center).height(20).width(20).margin({left: 3})
             .onClick(() => {
-              this.cardObject.list?.push({})
+              let maxIdx: number = 0
+              for(let i=0; this.cardObject.list != undefined && i<this.cardObject.list?.length; i++) {
+                maxIdx = this.cardObject.list[i].idx > maxIdx ? this.cardObject.list[i].idx : maxIdx
+              }
+              this.cardObject.list?.push({idx: maxIdx+1})
               this.cardObject.debug = this.cardObject.debug + 1
-              logger.info("添加了一个: %{public}s", JSON.stringify(this.cardObject))
             })
           Image($r('app.media.delete'))
             .objectFit(ImageFit.Cover)
             .align(Alignment.Center).height(20).width(20).margin({left: 3})
             .onClick(() => {
-              logger.info("移除前的列表为: %{public}s", JSON.stringify(this.cardObject))
+              if(this.cardObject.list?.length == 1) {
+                logger.debug("最后一个不准移除，直接返回")
+                return
+              }
               this.cardObject.list = this.cardObject.list?.filter((curr) => {
-                return curr.name != item.name
+                return curr.idx != item.idx
               })
               this.cardObject.debug = this.cardObject.debug + 1
-              logger.info("移除后的列表为: %{public}s", JSON.stringify(this.cardObject))
             })
 
         }.width('100%').padding({ right: 10 }).alignItems(VerticalAlign.Center)

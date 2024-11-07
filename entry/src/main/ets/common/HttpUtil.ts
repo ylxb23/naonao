@@ -1,10 +1,11 @@
 import { http } from "@kit.NetworkKit";
-import { CardObject, CardRequest, CardResponse, NamedDateItemObject } from "../viewmodel/card/Card";
-import { UID } from "./Constants";
+import { CardObject, CardRequest, CardResponse, CardTypeEnum, NamedDateItemObject } from "../viewmodel/card/Card";
+import { OperationType_Add, UID } from "./Constants";
 import { copyToTempDir } from "./FileUtil";
 import { Logger } from "./Logger";
 import { Context } from "@kit.AbilityKit";
 import { CommonHttpResponse } from "./Common";
+import { CardType } from "@kit.VisionKit";
 
 const logger: Logger = new Logger('HttpUtil')
 
@@ -101,10 +102,13 @@ export async function uploadFileRequest(uri: string, context: Context) : Promise
  * @returns
  */
 export async function addCardRequest(card: CardObject): Promise<CommonHttpResponse> {
+  if(card.operation == undefined) {
+    card.operation = OperationType_Add
+  }
   let commonRes: CommonHttpResponse = {status: 0}
   let request: CardRequest = {
     openid: UID,
-    operation: "add",
+    operation: card.operation,
     card: card
   }
   let url: string = REMOTE_HOST + "/card"
@@ -140,7 +144,8 @@ export async function addCardRequest(card: CardObject): Promise<CommonHttpRespon
  * @param card
  * @returns
  */
-export async function deleteCardRequest(card: CardObject): Promise<boolean> {
+export async function deleteCardRequest(card: CardObject): Promise<CommonHttpResponse> {
+  let commonRes: CommonHttpResponse = {status: 0}
   let request: CardRequest = {
     openid: UID,
     operation: "delete",
@@ -155,11 +160,10 @@ export async function deleteCardRequest(card: CardObject): Promise<boolean> {
     connectTimeout: 50000,
     extraData: JSON.stringify(request)
   }
-  let result: boolean = false
   let response: Promise<http.HttpResponse> = httpRequest.request(url, httpRequestOptions)
   await response.then((data: http.HttpResponse) => {
     logger.info("删除卡片[%{public}s]成功: %{public}s", JSON.stringify(card), data.result)
-    result = true
+    commonRes.status = 200
     httpRequest.destroy();
   }).catch( () => {
     logger.error("删除卡片异常: %{public}s", JSON.stringify(card))
@@ -167,7 +171,7 @@ export async function deleteCardRequest(card: CardObject): Promise<boolean> {
     httpRequest.destroy();
     return
   })
-  return result
+  return commonRes
 }
 
 /**
@@ -198,22 +202,24 @@ export async function doAddCardRequest(cardObject: CardObject, context: Context)
     return commonRes
   }
   // 上传列表中的图片
-  for(let i=0; i<cardObject.list?.length; i++) {
-    let item:NamedDateItemObject = cardObject.list[i]
-    let listPicP: Promise<CommonHttpResponse> = uploadFileRequest(item.avatar, context)
-    await listPicP.then((res) => {
-      if(res.status == 200) {
-        logger.debug("上传卡片列表图片[%{public}s]成功, 上传结果: %{public}s", item.avatar, res.message)
-        item.avatar = res.message
-      } else {
-        logger.warn("上传卡片列表图片[%{public}s]失败: %{public}s", item.avatar, res.message)
-        commonRes.message = res.message
-        commonRes.status = 0  // 已经失败了
+  if(cardObject.type == CardTypeEnum.AnniversaryList.valueOf() || cardObject.type == CardTypeEnum.CountdownList.valueOf()) {
+    for(let i=0; cardObject.list != undefined && i<cardObject.list?.length; i++) {
+      let item:NamedDateItemObject = cardObject.list[i]
+      let listPicP: Promise<CommonHttpResponse> = uploadFileRequest(item.avatar, context)
+      await listPicP.then((res) => {
+        if(res.status == 200) {
+          logger.debug("上传卡片列表图片[%{public}s]成功, 上传结果: %{public}s", item.avatar, res.message)
+          item.avatar = res.message
+        } else {
+          logger.warn("上传卡片列表图片[%{public}s]失败: %{public}s", item.avatar, res.message)
+          commonRes.message = res.message
+          commonRes.status = 0  // 已经失败了
+        }
+      })
+      if(commonRes.status == 0) {
+        logger.warn("上传卡片列表图片过程失败,卡片内容: %{public}s", JSON.stringify(cardObject))
+        return commonRes
       }
-    })
-    if(commonRes.status == 0) {
-      logger.debug("上传卡片列表图片过程失败,卡片内容: %{public}s", JSON.stringify(cardObject))
-      return commonRes
     }
   }
   logger.debug("上传卡片实际内容: %{public}s", JSON.stringify(cardObject))

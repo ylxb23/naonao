@@ -27,11 +27,15 @@ export const DISPLAY_SMALL_HEIGHT = DISPLAY_SMALL_WIDTH / 3
 export abstract class AbsCard {
   public readonly type?: CardTypeEnum
   public size?: SizeEnum
+  public sort?: number
 
-  constructor(t: CardTypeEnum, s?: SizeEnum) {
+  constructor(t: CardTypeEnum, s?: SizeEnum, o?: number) {
     this.type = t
     if (s != undefined) {
       this.size = s
+    }
+    if (o != undefined) {
+      this.sort = o
     }
   }
 }
@@ -227,6 +231,7 @@ export class CardResponse {
 }
 
 export class CardObject {
+  operation?: string
   sort?: number
   type?: number
   title?: string
@@ -236,7 +241,13 @@ export class CardObject {
   debug: number = 0 // 解决class类型mvvm属性内的属性变更导致的同步不及时问题，使最上层属性得到变更即可出发view的变更
 }
 export class NamedDateItemObject {
+  idx: number = 0
   name?: string
   date?: string
   avatar?: string
+}
+
+export class CardRouterParam {
+  operation: string
+  card: AbsCard
 }

@@ -1,10 +1,13 @@
-import { CARD_FRONT_FONT_OPACITY } from '../../common/Constants'
+import { CARD_FRONT_FONT_OPACITY, OperationType_Add, OperationType_Update } from '../../common/Constants'
 import { Logger } from '../../common/Logger'
-import { AnniversaryCardItem, CardObject, DISPLAY_MIDDLE_HEIGHT, DISPLAY_MIDDLE_WIDTH } from '../../viewmodel/card/Card'
+import { AnniversaryCardItem, CardObject,
+  CardRouterParam,
+  DISPLAY_MIDDLE_HEIGHT, DISPLAY_MIDDLE_WIDTH } from '../../viewmodel/card/Card'
 import { daysPassedOfDate, formatDate } from '../../common/DateUtil'
 import { photoPickOne } from '../../common/PickerUtil'
 import { router } from '@kit.ArkUI'
 import { deleteCardRequest } from '../../common/HttpUtil'
+import { CommonHttpResponse } from '../../common/Common'
 
 const logger: Logger = new Logger("AnniversaryCard")
 
@@ -99,13 +102,13 @@ export struct AnniversaryCard {
   @Builder
   PopMenu (){
     Menu() {
-      MenuItem({content: $r('app.string.Card_AddCard'), endIcon: $r('app.media.addp2')}).onClick((event) => {
-        router.pushUrl({url: "pages/card/CardAddSelection", params: this.info})
+      MenuItem({content: $r('app.string.Card_AddCard'), endIcon: $r('app.media.addp2')}).onClick(() => {
+        router.pushUrl({url: "pages/card/CardAddSelection", params: {card: this.info, operation: OperationType_Add} as CardRouterParam})
       })
-      MenuItem({content: $r('app.string.Card_UpdateCard'), endIcon: $r('app.media.accept2')}).onClick((event) => {
-        router.pushUrl({url: "pages/card/CardAddSelection", params: this.info})
+      MenuItem({content: $r('app.string.Card_UpdateCard'), endIcon: $r('app.media.accept2')}).onClick(() => {
+        router.pushUrl({url: "pages/card/CardAddSelection", params: {card: this.info, operation: OperationType_Update} as CardRouterParam})
       })
-      MenuItem({content: $r('app.string.Card_DeleteCard'), endIcon: $r('app.media.reject2')}).onClick((event) => {
+      MenuItem({content: $r('app.string.Card_DeleteCard'), endIcon: $r('app.media.reject2')}).onClick(() => {
         let cardObject: CardObject = {
           type: this.info?.type?.valueOf(),
           title: this.info?.title,
@@ -113,9 +116,9 @@ export struct AnniversaryCard {
           background: this.info?.backgroundImgUri,
           debug: 0
         }
-        let yes: Promise<boolean> = deleteCardRequest(cardObject)
-        yes.then((y) => {
-          if(y) {
+        let commonResP: Promise<CommonHttpResponse> = deleteCardRequest(cardObject)
+        commonResP.then((commonRes) => {
+          if(commonRes.status == 200) {
             AlertDialog.show({
               title: $r('app.string.Info'),
               message: $r('app.string.Card_DeleteSuccess')
@@ -167,6 +170,7 @@ export struct AnniversaryCardEdit {
       TextInput({ text: this.cardObject.title, placeholder: $r('app.string.Card_InputName') })
         .width('100%')
         .height(30)
+        .enabled(this.cardObject.operation != OperationType_Update)
         .textAlign(TextAlign.Center)
         .fontSize(13)
         .fontColor(Color.White)

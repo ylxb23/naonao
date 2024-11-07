@@ -82,11 +82,11 @@
     },
     {
       "name": "Card_Type_CountdownList",
-      "value": "倒计时列表卡片"
+      "value": "纪念日倒计时列表卡片"
     },
     {
       "name": "Card_Type_Countdown",
-      "value": "倒计时卡片"
+      "value": "纪念日倒计时卡片"
     },
     {
       "name": "Card_Type_AnniversaryList",
