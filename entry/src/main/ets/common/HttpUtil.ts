@@ -5,7 +5,9 @@ import { copyToTempDir } from "./FileUtil";
 import { Logger } from "./Logger";
 import { Context } from "@kit.AbilityKit";
 import { CommonHttpResponse } from "./Common";
-import { CardType } from "@kit.VisionKit";
+import { enable } from "./NetUtil";
+import { deleteCardLocal, loadCardsFromStorage, storageCardLocal, upsertCardLocal } from "./CardLocalStorage";
+import { request } from "@kit.BasicServicesKit";
 
 const logger: Logger = new Logger('HttpUtil')
 
@@ -16,8 +18,13 @@ const REMOTE_HOST:string = "http://192.168.43.167:8080";
  * @param uid
  * @returns
  */
-export function getCardList(uid: string) {
-  let url:string = REMOTE_HOST + "/cards/" + uid
+export function getCardList() {
+  if(!enable()) {
+    // 网络不可用
+    loadCardsFromStorage()
+    return
+  }
+  let url:string = REMOTE_HOST + "/cards/" + UID
   let httpRequest = http.createHttp()
   let httpRequestOptions : http.HttpRequestOptions = {
     method: http.RequestMethod.GET,
@@ -33,13 +40,14 @@ export function getCardList(uid: string) {
     }
     if(data.responseCode == http.ResponseCode.OK) {
       logger.info("请求获取到卡片列表: %{public}s", data.result)
-      AppStorage.setOrCreate(uid + "-cards", data.result)
+      storageCardLocal(data.result.toString())
     } else {
       logger.warn("请求卡片列表失败, code: %{public}s", data.responseCode)
     }
     httpRequest.destroy();
   })
 }
+
 
 /**
  * 上传文件，并返回上传后的地址
@@ -58,6 +66,13 @@ export async function uploadFileRequest(uri: string, context: Context) : Promise
   if(tmp == undefined || tmp == "") {
     logger.error("拷贝本地文件失败,src: %{public}s", uri)
     commonRes.message = "拷贝本地文件失败"
+    return commonRes
+  }
+  if(!enable()) {
+    commonRes.status = 200
+    commonRes.message = tmp
+    // 网络不可用
+    logger.debug("网络不可用，直接返回拷贝后的路径: %{public}s, 源: %{public}s", tmp, uri)
     return commonRes
   }
   // 拷贝文件暂存，并返回暂存后的路径
@@ -111,6 +126,12 @@ export async function addCardRequest(card: CardObject): Promise<CommonHttpRespon
     operation: card.operation,
     card: card
   }
+  if(!enable()) {
+    // 网络不可用,将卡片放置到本地即可
+    logger.debug("准备写入本地: %{public}s", JSON.stringify(request))
+    return upsertCardLocal(request)
+  }
+
   let url: string = REMOTE_HOST + "/card"
   let httpRequest = http.createHttp()
   let httpRequestOptions : http.HttpRequestOptions = {
@@ -150,6 +171,10 @@ export async function deleteCardRequest(card: CardObject): Promise<CommonHttpRes
     openid: UID,
     operation: "delete",
     card: card
+  }
+  if(!enable()) {
+    // 网络不可用
+    return deleteCardLocal(request)
   }
   let url: string = REMOTE_HOST + "/card"
   let httpRequest = http.createHttp()
@@ -199,6 +224,7 @@ export async function doAddCardRequest(cardObject: CardObject, context: Context)
     })
   }
   if(commonRes.status == 0) {
+    logger.error("图片上传失败了: %{public}s", JSON.stringify(cardObject))
     return commonRes
   }
   // 上传列表中的图片

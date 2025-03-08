@@ -4,17 +4,13 @@ import { CountdownCard } from '../view/card/CountdownCard'
 import {
   AbsCard,
   AnniversaryCardItem,
-  CardObject,
-  CardResponse,
-  CardTypeEnum,
   CountdownCardItem,
   CountdownListCardItem,
   EmptyCardItem,
-  NamedDateItem,
-  NamedDateItemObject,
 } from '../viewmodel/card/Card'
 import { Logger } from '../common/Logger'
 import { EmptyCard } from '../view/card/EmptyCard'
+import { loadCardsFromStorage } from '../common/CardLocalStorage'
 
 const logger: Logger = new Logger("Home")
 
@@ -28,56 +24,30 @@ export struct Home {
   // 当前页面需要展示所有卡片列表
   @State cards: AbsCard[] = []
 
-  getCardsFromStorage() {
-    let stored: string | undefined = AppStorage.get("nwx_001-cards")
-    logger.debug("从本地存储中获得卡片信息: %{public}s", stored)
-    if(stored == undefined) {
-      logger.info("从本地存储中获取到卡片列表为空...")
-      return
-    }
-    let res: CardResponse = JSON.parse(stored)
-    let cards = res.cards
-    if(cards == undefined || cards.length == 0) {
-      logger.info("从本地存储中获取到卡片列表为空...")
-      return
-    }
-    for (let index = 0; index < cards.length; index++) {
-      const element: CardObject = cards[index];
-      switch (element.type) {
-        case CardTypeEnum.Anniversary.valueOf():
-          if(element.title != undefined && element.date != undefined) {
-            this.cards.push(new AnniversaryCardItem(element.title, new Date(element.date), element.background))
-          }
-        break;
-        case CardTypeEnum.Countdown.valueOf():
-          if(element.title != undefined && element.date != undefined) {
-            this.cards.push(new CountdownCardItem(element.title, new Date(element.date), element.background))
-          }
-          break;
-        case CardTypeEnum.CountdownList.valueOf():
-          if(element.title != undefined && element.date != undefined && element.list != undefined) {
-            let countdowns: NamedDateItem[] = []
-            for (let j = 0; j < element.list.length; j++) {
-              const item: NamedDateItemObject = element.list[j];
-              if(item.name != undefined && item.date != undefined && item.avatar != undefined) {
-                countdowns.push(new NamedDateItem(item.name, new Date(item.date), item.avatar))
-              }
-            }
-            this.cards.push(new CountdownListCardItem(element.title, countdowns, element.background))
-          }
-          break;
-          default :
-            logger.warn("未知卡片类型: %d", element.type)
-      }
-    }
-  }
-
-  aboutToAppear() {
-    this.getCardsFromStorage()
-    logger.debug("获取到卡片列表: %s", JSON.stringify(this.cards))
+  reloadCards(): void {
+    this.cards = loadCardsFromStorage()
+    logger.debug("HOME获取到卡片列表: %{public}s", JSON.stringify(this.cards))
     if(this.cards.length == 0) {
       this.cards.push(new EmptyCardItem())
     }
+  }
+
+  aboutToReuse(): void {
+    logger.debug("aboutToReuse")
+  }
+
+  aboutToRecycle(): void {
+    logger.debug("aboutToRecycle")
+  }
+
+  onPageShow(): void {
+    logger.debug("onPageShow")
+    this.reloadCards()
+  }
+
+  aboutToAppear() {
+    logger.debug("aboutToAppear")
+    this.reloadCards()
   }
 
   build() {

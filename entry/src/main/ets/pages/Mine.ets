@@ -8,7 +8,7 @@ export struct Mine {
 
   build() {
     Stack({ alignContent: Alignment.Top }) {
-      Text(this.tabIdx + '').fontColor(Color.Red).fontSize(88).margin('auto')
+      Text(this.tabIdx+"").width('100%')
     }.height('100%').width('100%')
   }
 }

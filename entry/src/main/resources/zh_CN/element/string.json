@@ -139,6 +139,14 @@
     {
       "name": "Card_InputSort",
       "value": "输入排序序号(越小越靠前)"
+    },
+    {
+      "name": "Card_UpdateSuccess",
+      "value": "更新成功"
+    },
+    {
+      "name": "Card_UpdateFailed",
+      "value": "更新失败"
     }
   ]
 }

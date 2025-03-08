@@ -4,17 +4,22 @@ import { Logger } from '../common/Logger';
 import { getCardList } from '../common/HttpUtil';
 import AbilityConstant from '@ohos.app.ability.AbilityConstant';
 import Want from '@ohos.app.ability.Want';
-import { UID } from '../common/Constants';
+import { BusinessError } from '@kit.BasicServicesKit';
 
 const logger: Logger = new Logger('EntryAbility')
 
+/**
+ * 卡片首页入口
+ */
 export default class EntryAbility extends UIAbility {
-  _thisWindowStage: window.WindowStage | undefined = undefined;
+
+  // UIAbility启动时:
+  // onCreate() -> onWindowStageCreate() -> onForeground() -> SHOWN -> ACTIVE ->
+  // 切换到后台时:
+  // onNewWant() -> onFore
 
   onCreate(want, launchParam) {
     logger.debug("onCreate, want: %s, launchParam: %s", JSON.stringify(want), JSON.stringify(launchParam))
-    // 加载卡片信息
-    getCardList(UID)
   }
 
   onDestroy() {
@@ -24,7 +29,6 @@ export default class EntryAbility extends UIAbility {
   onWindowStageCreate(windowStage: window.WindowStage) {
     // Main window is created, set main page for this ability
     logger.info('%{public}s', '首页 Ability onWindowStageCreate');
-    this._thisWindowStage = windowStage
     windowStage.on("windowStageEvent", (data: window.WindowStageEventType) => {
       switch (data) {
         case window.WindowStageEventType.SHOWN: // 切到前台
@@ -49,6 +53,8 @@ export default class EntryAbility extends UIAbility {
           break;
       }
     })
+    getCardList()
+    logger.info("getCardList in home.")
 
     windowStage.loadContent('pages/Index', (err, data) => {
       if (err.code) {
@@ -59,9 +65,21 @@ export default class EntryAbility extends UIAbility {
     });
   }
 
+  onWindowStageWillDestroy(windowStage: window.WindowStage): void {
+    if(windowStage) {
+      try {
+        windowStage.off("windowStageEvent")
+      } catch (err) {
+        logger.error(`释放 windowStageEvent监听失败, ${(err as BusinessError).code} - ${(err as BusinessError).message}`)
+      }
+    }
+  }
+
   onWindowStageDestroy() {
+    // 用于释放UI资源
     // Main window is destroyed, release UI related resources
     logger.info('首页 %{public}s', 'Ability onWindowStageDestroy');
+
   }
 
   onForeground() {
@@ -76,6 +94,5 @@ export default class EntryAbility extends UIAbility {
 
   onNewWant(want: Want, launchParam: AbilityConstant.LaunchParam): void {
     logger.info('首页 %{public}s', 'Ability onNewWant');
-    getCardList(UID)
   }
 }

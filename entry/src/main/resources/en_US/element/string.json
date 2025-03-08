@@ -139,6 +139,14 @@
     {
       "name": "Card_InputSort",
       "value": "Input Sort(min first)"
+    },
+    {
+      "name": "Card_UpdateSuccess",
+      "value": "Update Success"
+    },
+    {
+      "name": "Card_UpdateFailed",
+      "value": "Update Failed"
     }
   ]
 }

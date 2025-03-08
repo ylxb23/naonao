@@ -11,11 +11,15 @@
     ],
     "requestPermissions": [
       {
+      "name": "ohos.permission.INTERNET",
+      "reason": "$string:app_name",
+      "usedScene": {"abilities": ["EntryAbility"], "when": "always"}
+      },{
         "name": "ohos.permission.GET_NETWORK_INFO",
         "reason": "$string:app_name",
         "usedScene": {"abilities": ["EntryAbility"], "when": "always"}
       },{
-        "name": "ohos.permission.INTERNET",
+        "name": "ohos.permission.GET_WIFI_INFO",
         "reason": "$string:app_name",
         "usedScene": {"abilities": ["EntryAbility"], "when": "always"}
       },{

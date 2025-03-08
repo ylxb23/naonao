@@ -7,14 +7,13 @@ import { AbsCard, AnniversaryCardItem, CardObject,
   CardTypeEnum, CountdownCardItem,
   CountdownListCardItem,
   NamedDateItem,
-  NamedDateItemObject,
 } from '../../viewmodel/card/Card';
 import { doAddCardRequest } from '../../common/HttpUtil';
 import { CountdownCardEdit } from '../../view/card/CountdownCard';
 import { CountdownListCardEdit } from '../../view/card/CountdownListCard';
 import { CommonHttpResponse } from '../../common/Common';
 import { formatDate } from '../../common/DateUtil';
-import { OperationType_Add, OperationType_Update } from '../../common/Constants';
+import { OperationType_Add, OperationType_Update, UID } from '../../common/Constants';
 
 
 const logger: Logger = new Logger("CardAddSelection")
@@ -95,16 +94,16 @@ struct CardAddSelection {
           addResult.then((res) => {
             logger.info("实际保存的卡片信息为: %{public}s", JSON.stringify(this.cardObject))
             if(res.status == 200) {
-              router.back({url: "/pages/Home", params: {refresh: true}})
-              // 保存卡片内容到Storage
               AlertDialog.show({
                 title: $r('app.string.Info'),
-                message: $r('app.string.Card_AddSuccess')
+                message: this.cardObject.operation == OperationType_Add ? $r('app.string.Card_AddSuccess') : $r('app.string.Card_UpdateSuccess')
               })
+              router.back()
             } else {
+              logger.warn("保存卡片失败, 卡片信息: %{public}s", JSON.stringify(this.cardObject))
               AlertDialog.show({
                 title: $r('app.string.Warning'),
-                subtitle: $r('app.string.Card_AddFailed'),
+                subtitle: this.cardObject.operation == OperationType_Add ? $r('app.string.Card_AddFailed') : $r('app.string.Card_UpdateFailed'),
                 message: res.message
               })
             }
@@ -118,7 +117,7 @@ struct CardAddSelection {
         .lineHeight(40)
         .width('100%')
         .fontWeight(FontWeight.Medium)
-        .fontSize(23)
+        .fontSize(20)
         .fontColor(Color.Grey)
         .textAlign(TextAlign.Center)
         .borderRadius(3)
@@ -173,7 +172,7 @@ struct CardAddSelection {
 
       }.margin({ top: 30 }).id("editPanel")
 
-      TextInput({text: this.cardObject.sort?.toString(), placeholder: $r('app.string.Card_InputSort')})
+      TextInput({text: this.cardObject.sort+"", placeholder: $r('app.string.Card_InputSort')})
         .width('100%')
         .type(InputType.Number)
         .fontWeight(FontWeight.Medium)

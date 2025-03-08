@@ -1,6 +1,7 @@
 import router from '@ohos.router'
+import { OperationType_Add } from '../../common/Constants'
 import { Logger } from '../../common/Logger'
-import { DISPLAY_BIG_HEIGHT, DISPLAY_BIG_WIDTH, EmptyCardItem } from '../../viewmodel/card/Card'
+import { CardRouterParam, DISPLAY_BIG_HEIGHT, DISPLAY_BIG_WIDTH, EmptyCardItem } from '../../viewmodel/card/Card'
 
 const logger: Logger = new Logger('Index')
 
@@ -36,8 +37,11 @@ export struct EmptyCard {
     }.width(DISPLAY_BIG_WIDTH).height(DISPLAY_BIG_HEIGHT)
     .borderRadius(10).backgroundColor('#ccc')
     .onClick(() => {
-      logger.info("clicked....")
-      router.pushUrl({url: "pages/card/CardAddSelection", params: new EmptyCardItem()}, () => {})
+      let param: CardRouterParam = new CardRouterParam();
+      param.operation = OperationType_Add
+      param.card = new EmptyCardItem()
+      logger.debug("go add card.")
+      router.pushUrl({url: "pages/card/CardAddSelection", params: param}, () => {})
     })
   }
 }
